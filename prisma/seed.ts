@@ -1,0 +1,96 @@
+import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import {
+  AcessLevel,
+  EmployType,
+  PrismaClient,
+  ShiftType,
+} from '../generated/prisma/client.js';
+
+const adapter = new PrismaPg({
+  connectionString: process.env['DATABASE_URL'],
+});
+const prisma = new PrismaClient({ adapter });
+
+async function main() {
+
+  const storeData = {
+      company_name: 'Doce Sabor LTDA',
+      trade_name: 'Sabor & Cia',
+      cnpj: '12345678000199',
+      adress: 'Rua das Flores, 123, Centro',
+      email: 'docesabor@email.com',
+      phone: '11987654321',
+  };
+
+  const storeUnit = await prisma.storeUnit.upsert({
+    where: {
+      company_name_cnpj: {
+        company_name: storeData.company_name,
+        cnpj: storeData.cnpj,
+      },
+    },
+    update: storeData,
+    create: storeData,
+  });
+
+  const users = [
+    {
+            name: 'Carlos Silva',
+            cpf: '12345678901',
+            email: 'carlos.gerente@saborecia.com',
+            phone: '11911112222',
+            password: 'password_1', 
+            role: 'Gerente Geral',
+            acess_level: AcessLevel.Master, 
+            employ_type: EmployType.CLT,  
+            shift: ShiftType.Full_Time,   
+            hire_date: new Date('2023-01-15'),
+            weekly_hours: 44,
+            salary: 4500.00,
+            bankName: 'Banco do Brasil',
+            active: true,
+    },
+    {
+            name: 'Ana Souza',
+            cpf: '98765432100',
+            email: 'ana.souza@saborecia.com',
+            phone: '11933334444',
+            password: 'password_2',
+            role: 'Atendente',
+            acess_level: AcessLevel.Junior, 
+            employ_type: EmployType.CLT,  
+            shift: ShiftType.Noite,       
+            hire_date: new Date('2023-06-01'),
+            weekly_hours: 36,
+            salary: 2100.00,
+            bankName: 'Nubank',
+            active: true,
+    },
+  ];
+
+  for (const user of users) {
+    await prisma.user.upsert({
+      where: {
+        email_cpf: {
+          email: user.email,
+          cpf: user.cpf,
+        },
+      },
+      update: { ...user, storeUnitId: storeUnit.id },
+      create: { ...user, storeUnitId: storeUnit.id },
+    });
+  }
+
+  console.log(' Seed executado com sucesso!');
+  console.log('Unidade criada:', storeUnit.trade_name);
+}
+
+main()
+  .catch((e) => {
+    console.error('Erro ao executar o seed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Client" ADD COLUMN     "createDate" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP;
