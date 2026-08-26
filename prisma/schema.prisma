@@ -249,7 +249,6 @@ model Reservation {
   phone          String            @db.VarChar(11)
   quantityPeople Int
   startsAt       DateTime
-  endsAt         DateTime
   status         ReservationStatus @default(Pendente)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -258,6 +257,6 @@ model Reservation {
   unitId         Int
   unit           StoreUnit         @relation(fields: [unitId], references: [id])
 
-  @@index([tableId, startsAt, endsAt])
+  @@index([tableId, startsAt])
   @@index([unitId, startsAt])
 }

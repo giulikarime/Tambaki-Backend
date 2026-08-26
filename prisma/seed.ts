@@ -5,6 +5,7 @@ import {
   EmployType,
   PrismaClient,
   ShiftType,
+  TableStatus
 } from '../generated/prisma/client.js';
 
 const adapter = new PrismaPg({
@@ -82,13 +83,57 @@ async function main() {
     });
   }
 
+    const table = await prisma.table.upsert({
+    where: { id: 1 },
+    update: {
+      table_number: 1,
+      capacity: 4,
+      status: TableStatus.Livre,
+      unitId: storeUnit.id,
+    },
+    create: {
+      id: 1,
+      table_number: 1,
+      capacity: 4,
+      status: TableStatus.Livre,
+      unitId: storeUnit.id,
+    },
+  });
+
+  await prisma.reservation.deleteMany();
+  await prisma.reservation.createMany({
+    data: [
+      {
+        name: 'João Guilherme',
+        phone: '11987654321',
+        quantityPeople: 4,
+        startsAt: new Date('2023-10-15T19:00:00Z'),
+        endsAt: new Date('2023-10-15T21:00:00Z'),
+        status: 'Pendente',
+        tableId: table.id,
+        unitId: storeUnit.id,
+      },  
+      {
+        name: 'Larissa Manoela',
+        phone: '11912345678',
+        quantityPeople: 2, 
+        startsAt: new Date('2023-10-16T18:30:00Z'),
+        endsAt: new Date('2023-10-16T20:00:00Z'),
+        status: 'Confirmada',
+        tableId: table.id,
+        unitId: storeUnit.id,
+      },
+
+    ]
+  });
+
   console.log(' Seed executado com sucesso!');
   console.log('Unidade criada:', storeUnit.trade_name);
 }
 
 main()
   .catch((e) => {
-    console.error('Erro ao executar o seed:', e);
+    console.error('Erro ao executar o seed:');
     process.exit(1);
   })
   .finally(async () => {
