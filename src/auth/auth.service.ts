@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async registerClient(dto: RegisterClientDto) {
     const existing = await this.prisma.client.findFirst({
@@ -64,6 +64,12 @@ export class AuthService {
 
     // 3. Nenhum dos dois encontrado
     throw new UnauthorizedException('E-mail ou senha inválidos');
+  }
+
+  async logout() {
+    return {
+      message: 'Logout realizado com sucesso!',
+    };
   }
 
   private async authenticateUser(
