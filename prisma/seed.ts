@@ -108,7 +108,6 @@ async function main() {
         phone: '11987654321',
         quantityPeople: 4,
         startsAt: new Date('2023-10-15T19:00:00Z'),
-        endsAt: new Date('2023-10-15T21:00:00Z'),
         status: 'Pendente',
         tableId: table.id,
         unitId: storeUnit.id,
@@ -118,7 +117,6 @@ async function main() {
         phone: '11912345678',
         quantityPeople: 2, 
         startsAt: new Date('2023-10-16T18:30:00Z'),
-        endsAt: new Date('2023-10-16T20:00:00Z'),
         status: 'Confirmada',
         tableId: table.id,
         unitId: storeUnit.id,
@@ -128,7 +126,6 @@ async function main() {
   });
 
   console.log(' Seed executado com sucesso!');
-  console.log('Unidade criada:', storeUnit.trade_name);
 }
 
 main()

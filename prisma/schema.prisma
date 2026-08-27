@@ -1,11 +1,207 @@
 generator client {
   provider     = "prisma-client"
-  moduleFormat = "cjs"
   output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model StoreUnit {
+  id           Int           @id @default(autoincrement())
+  company_name String        @db.VarChar(255)
+  trade_name   String        @db.VarChar(255)
+  cnpj         String        @db.VarChar(14)
+  adress       String        @db.VarChar(255)
+  email        String        @db.VarChar(255)
+  phone        String        @db.VarChar(11)
+  registeredAt DateTime      @default(now())
+  updateAt     DateTime      @updatedAt
+  menu         Menu[]
+  order        Order[]
+  product      Product[]
+  reservations Reservation[]
+  tables       Table[]
+  user         User[]
+
+  @@unique([company_name, cnpj])
+}
+
+model Client {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  email       String   @db.VarChar(100)
+  phone       String   @db.VarChar(11)
+  restaurant  String   @db.VarChar(150)
+  password    String   @db.VarChar(60)
+  acess_level String   @db.VarChar(100)
+  status      Boolean
+  createDate  DateTime @default(now()) @db.Date
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  name             String            @db.VarChar(255)
+  cpf              String            @db.VarChar(11)
+  email            String            @db.VarChar(255)
+  phone            String            @db.VarChar(11)
+  password         String            @db.VarChar(60)
+  role             String            @db.VarChar(150)
+  acess_level      AcessLevel
+  employ_type      EmployType
+  shift            ShiftType
+  hire_date        DateTime?
+  weekly_hours     Int?
+  salary           Decimal?          @db.Decimal(10, 2)
+  bankName         String?           @db.VarChar(150)
+  active           Boolean           @default(true)
+  storeUnitId      Int
+  employe_document EmployeDocument[]
+  storeUnit        StoreUnit         @relation(fields: [storeUnitId], references: [id])
+
+  @@unique([email, cpf])
+}
+
+model EmployeDocument {
+  id           Int       @id @default(autoincrement())
+  documentType String
+  file_Url     String
+  issuedAt     DateTime
+  valid_until  DateTime?
+  userId       Int
+  user         User      @relation(fields: [userId], references: [id])
+}
+
+model Supplier {
+  id               Int                @id @default(autoincrement())
+  company_name     String             @db.VarChar(255)
+  trade_name       String             @db.VarChar(255)
+  cnpj             Int
+  phone            String             @db.VarChar(11)
+  email            String             @db.VarChar(255)
+  adress           String             @db.VarChar(255)
+  businnes_hours   String
+  resposible_name  String             @db.VarChar(255)
+  payment_terms    String
+  lead_time_days   Int
+  products         Product[]
+  supplier_product SupplierProducts[]
+
+  @@unique([company_name, cnpj, email])
+}
+
+model SupplierProducts {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(150)
+  price      Float
+  supplierId Int
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+}
+
+model Product {
+  id               Int              @id @default(autoincrement())
+  name             String           @db.VarChar(150)
+  cost_price       Float
+  category         ProductsCategory
+  brand            String           @db.VarChar(150)
+  allergens        Allergens[]
+  stock_quantity   Int
+  unit_of_measure  String           @db.VarChar(50)
+  current_stock    Int
+  min_stock        Int
+  manufacture_date DateTime
+  expiration_date  DateTime
+  available        Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  supplierId       Int
+  unitId           Int
+  notification     Notification[]
+  supplier         Supplier         @relation(fields: [supplierId], references: [id])
+  unit             StoreUnit        @relation(fields: [unitId], references: [id])
+}
+
+model Menu {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  description String       @db.VarChar(255)
+  category    MenuCategory
+  price       Float
+  available   Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  unitId      Int
+  unit        StoreUnit    @relation(fields: [unitId], references: [id])
+  order       Order[]
+  orderItems  OrderItem[]
+}
+
+model Table {
+  id           Int           @id @default(autoincrement())
+  table_number Int
+  capacity     Int
+  status       TableStatus
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  unitId       Int
+  order        Order[]
+  reservations Reservation[]
+  unit         StoreUnit     @relation(fields: [unitId], references: [id])
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  total_value  Float       @default(0)
+  service_type ServiceType
+  order_date   DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  menuId       Int?
+  tableId      Int
+  unitId       Int
+  closed_at    DateTime?
+  status       OrderStatus @default(Aberta)
+  menu         Menu?       @relation(fields: [menuId], references: [id])
+  table        Table       @relation(fields: [tableId], references: [id])
+  unit         StoreUnit   @relation(fields: [unitId], references: [id])
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id         Int   @id @default(autoincrement())
+  quantity   Int
+  unit_price Float
+  orderId    Int
+  menuId     Int
+  menu       Menu  @relation(fields: [menuId], references: [id])
+  order      Order @relation(fields: [orderId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String   @db.VarChar(255)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  produtoID Int?
+  product   Product? @relation(fields: [produtoID], references: [id])
+}
+
+model Reservation {
+  id             Int               @id @default(autoincrement())
+  name           String            @db.VarChar(255)
+  phone          String            @db.VarChar(11)
+  quantityPeople Int
+  startsAt       DateTime
+  status         ReservationStatus @default(Pendente)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  tableId        Int
+  unitId         Int
+  table          Table             @relation(fields: [tableId], references: [id])
+  unit           StoreUnit         @relation(fields: [unitId], references: [id])
+
+  @@index([tableId, startsAt])
+  @@index([unitId, startsAt])
 }
 
 enum AcessLevel {
@@ -53,8 +249,8 @@ enum TableStatus {
 
 enum ProductsCategory {
   Carnes
-  Hortifrúti
-  Laticínios
+  // Hortifrúti
+  // Laticínios
   Embutidos
   Secos
   Limpeza
@@ -62,7 +258,7 @@ enum ProductsCategory {
 
 enum Allergens {
   Laticinios
-  Glúten
+  // Glúten
   Oleaginosas
   Frutos_do_mar
 }
@@ -73,190 +269,4 @@ enum ReservationStatus {
   Cancelada
   Concluida
   NoShow
-}
-
-model StoreUnit {
-  id           Int           @id @default(autoincrement())
-  company_name String        @db.VarChar(255)
-  trade_name   String        @db.VarChar(255)
-  cnpj         String        @db.VarChar(14)
-  adress       String        @db.VarChar(255)
-  email        String        @db.VarChar(255)
-  phone        String        @db.VarChar(11)
-  registeredAt DateTime      @default(now())
-  updateAt     DateTime      @updatedAt
-  user         User[]
-  product      Product[]
-  menu         Menu[]
-  tables       Table[]
-  order        Order[]
-  reservations Reservation[]
-
-  @@unique([company_name, cnpj])
-}
-
-model Client {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  email       String   @db.VarChar(100)
-  phone       String   @db.VarChar(11)
-  restaurant  String   @db.VarChar(150)
-  password    String   @db.VarChar(60)
-  acess_level String   @db.VarChar(100)
-  status      Boolean  @db.Boolean
-  createDate  DateTime @default(now()) @db.Date
-}
-
-model User {
-  id               Int               @id @default(autoincrement())
-  name             String            @db.VarChar(255)
-  cpf              String            @db.VarChar(11)
-  email            String            @db.VarChar(255)
-  phone            String            @db.VarChar(11)
-  password         String            @db.VarChar(60)
-  role             String            @db.VarChar(150)
-  acess_level      AcessLevel
-  employ_type      EmployType
-  shift            ShiftType
-  hire_date        DateTime?
-  weekly_hours     Int?
-  salary           Decimal?          @db.Decimal(10, 2)
-  bankName         String?           @db.VarChar(150)
-  active           Boolean           @default(true)
-  storeUnitId      Int
-  storeUnit        StoreUnit         @relation(fields: [storeUnitId], references: [id])
-  employe_document EmployeDocument[]
-
-  @@unique([email, cpf])
-}
-
-model EmployeDocument {
-  id           Int       @id @default(autoincrement())
-  documentType String
-  file_Url     String
-  issuedAt     DateTime
-  valid_until  DateTime?
-  userId       Int
-  user         User      @relation(fields: [userId], references: [id])
-}
-
-model Supplier {
-  id               Int                @id @default(autoincrement())
-  company_name     String             @db.VarChar(255)
-  trade_name       String             @db.VarChar(255)
-  cnpj             Int
-  phone            String             @db.VarChar(11)
-  email            String             @db.VarChar(255)
-  adress           String             @db.VarChar(255)
-  businnes_hours   String
-  resposible_name  String             @db.VarChar(255)
-  payment_terms    String
-  lead_time_days   Int
-  supplier_product SupplierProducts[]
-  products         Product[]
-
-  @@unique([company_name, cnpj, email])
-}
-
-model SupplierProducts {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(150)
-  price      Float
-  supplierId Int
-  supplier   Supplier @relation(fields: [supplierId], references: [id])
-}
-
-model Product {
-  id               Int              @id @default(autoincrement())
-  name             String           @db.VarChar(150)
-  cost_price       Float
-  category         ProductsCategory
-  brand            String           @db.VarChar(150)
-  allergens        Allergens[]
-  stock_quantity   Int
-  unit_of_measure  String           @db.VarChar(50)
-  current_stock    Int
-  min_stock        Int
-  manufacture_date DateTime
-  expiration_date  DateTime
-  available        Boolean          @default(true)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  supplierId       Int
-  supplier         Supplier         @relation(fields: [supplierId], references: [id])
-  unitId           Int
-  unit             StoreUnit        @relation(fields: [unitId], references: [id])
-}
-
-model Menu {
-  id          Int          @id @default(autoincrement())
-  name        String       @db.VarChar(255)
-  description String       @db.VarChar(255)
-  category    MenuCategory
-  price       Float
-  available   Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  unitId      Int
-  unit        StoreUnit    @relation(fields: [unitId], references: [id])
-  order       Order[]
-  orderItems  OrderItem[]
-}
-
-model Table {
-  id           Int           @id @default(autoincrement())
-  table_number Int
-  capacity     Int
-  status       TableStatus
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  unitId       Int
-  unit         StoreUnit     @relation(fields: [unitId], references: [id])
-  order        Order[]
-  reservations Reservation[]
-}
-
-model Order {
-  id           Int         @id @default(autoincrement())
-  status       OrderStatus @default(Aberta)
-  total_value  Float       @default(0)
-  service_type ServiceType
-  order_date   DateTime    @default(now())
-  closed_at    DateTime?
-  updatedAt    DateTime    @updatedAt
-  tableId      Int
-  table        Table       @relation(fields: [tableId], references: [id])
-  unitId       Int
-  unit         StoreUnit   @relation(fields: [unitId], references: [id])
-  items        OrderItem[]
-  menu         Menu?       @relation(fields: [menuId], references: [id])
-  menuId       Int?
-}
-
-model OrderItem {
-  id         Int   @id @default(autoincrement())
-  quantity   Int
-  unit_price Float
-  orderId    Int
-  order      Order @relation(fields: [orderId], references: [id])
-  menuId     Int
-  menu       Menu  @relation(fields: [menuId], references: [id])
-}
-
-model Reservation {
-  id             Int               @id @default(autoincrement())
-  name           String            @db.VarChar(255)
-  phone          String            @db.VarChar(11)
-  quantityPeople Int
-  startsAt       DateTime
-  status         ReservationStatus @default(Pendente)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  tableId        Int
-  table          Table             @relation(fields: [tableId], references: [id])
-  unitId         Int
-  unit           StoreUnit         @relation(fields: [unitId], references: [id])
-
-  @@index([tableId, startsAt])
-  @@index([unitId, startsAt])
 }
