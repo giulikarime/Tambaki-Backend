@@ -91,11 +91,6 @@ Tambaki-Backend/
 * Node.js instalado
 * pgAdmin (PostgreSQL) instalado na máquina
 
-```
-user: postgres
-senha: postgres
-```
-
 ## Como Executar o Projeto
 
 1. Acesse a pasta do backend e instale as dependências:
