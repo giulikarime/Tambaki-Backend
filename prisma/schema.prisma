@@ -249,8 +249,8 @@ enum TableStatus {
 
 enum ProductsCategory {
   Carnes
-  // Hortifrúti
-  // Laticínios
+  Hortifrúti
+  Laticínios
   Embutidos
   Secos
   Limpeza
@@ -258,7 +258,7 @@ enum ProductsCategory {
 
 enum Allergens {
   Laticinios
-  // Glúten
+  Glúten
   Oleaginosas
   Frutos_do_mar
 }
