@@ -1,4 +1,5 @@
 import {
+	IsBoolean,
 	IsDateString,
 	IsEmail,
 	IsEnum,
@@ -36,6 +37,10 @@ export class RegisterUserDto {
 	@IsString()
 	@IsNotEmpty({ message: 'A função é obrigatória.' })
 	role!: string;
+
+	@IsOptional()
+	@IsBoolean({ message: 'O status ativo deve ser booleano.' })
+	active?: boolean;
 
 	@IsEnum(AcessLevel, { message: 'Nível de acesso inválido.' })
 	acess_level!: AcessLevel;

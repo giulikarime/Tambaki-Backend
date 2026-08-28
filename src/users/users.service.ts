@@ -17,38 +17,43 @@ export class UsersService {
     return users.map(({ password: _, ...user }) => user);
   }
 
-    async registerUser(dto: RegisterUserDto) {
-      const existing = await this.prisma.client.findFirst({
-        where: { email: dto.email },
-      });
-      if (existing) {
-        throw new ConflictException('Já existe uma conta com esse e-mail.');
-      }
-  
-      const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
-  
-      const users = await this.prisma.client.create({
-        data: {
-          name: dto.name,
-          email: dto.email,
-          phone: dto.phone,
-          password: hashedPassword,
-          acess_level: dto.acess_level,
-          employ_type: dto.employ_type,
-          shift: dto.shift,
-          hire_date: dto.hire_date,
-          weekly_hours: dto.weekly_hours,
-          salary: dto.salary,
-          bankName: dto.bankName,
-          storeUnitId: dto.storeUnitId,
-        },
-      });
-  
-      const { password: _, ...usersWithoutPassword } = users;
-      return {
-        message: 'Usuário cadastrado com sucesso!',
-        user: usersWithoutPassword,
-      };
+  async registerUser(dto: RegisterUserDto) {
+    const existing = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: dto.email }, { cpf: dto.cpf }],
+      },
+    });
+    if (existing) {
+      throw new ConflictException('Já existe um usuário com esse e-mail ou CPF.');
     }
+
+    const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
+
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name,
+        cpf: dto.cpf,
+        email: dto.email,
+        phone: dto.phone,
+        password: hashedPassword,
+        role: dto.role,
+        acess_level: dto.acess_level,
+        employ_type: dto.employ_type,
+        shift: dto.shift,
+        hire_date: dto.hire_date ? new Date(dto.hire_date) : undefined,
+        weekly_hours: dto.weekly_hours,
+        salary: dto.salary,
+        bankName: dto.bankName,
+        active: dto.active,
+        storeUnitId: dto.storeUnitId,
+      },
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+    return {
+      message: 'Usuário cadastrado com sucesso!',
+      user: userWithoutPassword,
+    };
+  }
   
 }
