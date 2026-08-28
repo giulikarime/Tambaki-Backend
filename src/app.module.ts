@@ -7,9 +7,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TablesModule } from './tables/tables.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReservationsModule } from './reservations/reservations.module'
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, OrdersModule, ReservationsModule,ConfigModule.forRoot({ isGlobal: true }), TablesModule],
+  imports: [PrismaModule, AuthModule, OrdersModule, ReservationsModule, ConfigModule.forRoot({ isGlobal: true }), TablesModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
