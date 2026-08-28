@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import {
   AcessLevel,
@@ -71,6 +72,8 @@ async function main() {
   ];
 
   for (const user of users) {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+
     await prisma.user.upsert({
       where: {
         email_cpf: {
@@ -78,8 +81,8 @@ async function main() {
           cpf: user.cpf,
         },
       },
-      update: { ...user, storeUnitId: storeUnit.id },
-      create: { ...user, storeUnitId: storeUnit.id },
+      update: { ...user, password: hashedPassword, storeUnitId: storeUnit.id },
+      create: { ...user, password: hashedPassword, storeUnitId: storeUnit.id },
     });
   }
 
