@@ -122,6 +122,8 @@ O backend estará disponível em:
 http://localhost:3000
 ```
 
+5. Acesso o frontend em [Tambaki-Frontend](https://github.com/giulikarime/Tambaki-Frontend.git)
+
 ## Variáveis de Ambiente
 
 Antes de executar o projeto, configure o arquivo `.env` com base no modelo:
