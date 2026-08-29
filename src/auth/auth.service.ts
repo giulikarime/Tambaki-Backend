@@ -35,7 +35,7 @@ export class AuthService {
         phone: dto.phone,
         restaurant: dto.restaurant,
         password: hashedPassword,
-        acess_level: dto.acess_level,
+        access_level: dto.access_level,
         status: dto.status,
       },
     });
@@ -94,7 +94,7 @@ export class AuthService {
       type: 'user' as const,
       email: user.email,
       role: user.role,
-      acess_level: user.acess_level,
+      access_level: user.access_level,
       storeUnitId: user.storeUnitId,
     };
     const accessToken = await this.jwtService.signAsync(payload);
@@ -126,7 +126,7 @@ export class AuthService {
       sub: client.id,
       type: 'client' as const,
       email: client.email,
-      acess_level: client.acess_level,
+      access_level: client.access_level,
       restaurant: client.restaurant,
     };
     const accessToken = await this.jwtService.signAsync(payload);

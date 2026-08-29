@@ -35,7 +35,7 @@ model Client {
   phone       String   @db.VarChar(11)
   restaurant  String   @db.VarChar(150)
   password    String   @db.VarChar(60)
-  acess_level String   @db.VarChar(100)
+  access_level String   @db.VarChar(100)
   status      Boolean
   createDate  DateTime @default(now()) @db.Date
 }
@@ -48,7 +48,7 @@ model User {
   phone            String            @db.VarChar(11)
   password         String            @db.VarChar(60)
   role             String            @db.VarChar(150)
-  acess_level      AcessLevel
+  access_level     AccessLevel
   employ_type      EmployType
   shift            ShiftType
   hire_date        DateTime?
@@ -110,6 +110,7 @@ model Product {
   unit_of_measure  String           @db.VarChar(50)
   current_stock    Int
   min_stock        Int
+  max_stock        Int
   manufacture_date DateTime
   expiration_date  DateTime
   available        Boolean          @default(true)
@@ -204,7 +205,7 @@ model Reservation {
   @@index([unitId, startsAt])
 }
 
-enum AcessLevel {
+enum AccessLevel {
   Master
   Senior
   Pleno
@@ -249,8 +250,8 @@ enum TableStatus {
 
 enum ProductsCategory {
   Carnes
-  // Hortifrúti
-  // Laticínios
+  Hortifrúti
+  Laticínios
   Embutidos
   Secos
   Limpeza
@@ -258,7 +259,7 @@ enum ProductsCategory {
 
 enum Allergens {
   Laticinios
-  // Glúten
+  Glúten
   Oleaginosas
   Frutos_do_mar
 }
