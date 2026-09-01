@@ -2,7 +2,7 @@ import 'dotenv/config';
 import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import {
-  AcessLevel,
+  AccessLevel,
   EmployType,
   PrismaClient,
   ShiftType,
@@ -44,7 +44,7 @@ async function main() {
             phone: '11911112222',
             password: 'password_1', 
             role: 'Gerente Geral',
-            acess_level: AcessLevel.Master, 
+            access_level: AccessLevel.Master, 
             employ_type: EmployType.CLT,  
             shift: ShiftType.Full_Time,   
             hire_date: new Date('2023-01-15'),
@@ -60,7 +60,7 @@ async function main() {
             phone: '11933334444',
             password: 'password_2',
             role: 'Atendente',
-            acess_level: AcessLevel.Junior, 
+            access_level: AccessLevel.Junior, 
             employ_type: EmployType.CLT,  
             shift: ShiftType.Noite,       
             hire_date: new Date('2023-06-01'),
@@ -134,6 +134,7 @@ async function main() {
 main()
   .catch((e) => {
     console.error('Erro ao executar o seed:');
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {
