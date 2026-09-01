@@ -13,43 +13,52 @@ import {
 } from 'class-validator';
 import { AcessLevel, EmployType, ShiftType } from '../../generated/prisma/enums';
 
-export class RegisterUserDto {
+export class UpdateUserDto {
+	@IsOptional()
 	@IsString()
-	@IsNotEmpty({ message: 'O nome é obrigatório.' })
-	name!: string;
+	@IsNotEmpty({ message: 'O nome não pode ser vazio.' })
+	name?: string;
 
+	@IsOptional()
 	@IsString()
-	@IsNotEmpty({ message: 'O CPF é obrigatório.' })
-	cpf!: string;
+	@IsNotEmpty({ message: 'O CPF não pode ser vazio.' })
+	cpf?: string;
 
+	@IsOptional()
 	@IsEmail({}, { message: 'E-mail inválido.' })
-	@IsNotEmpty({ message: 'O e-mail é obrigatório.' })
-	email!: string;
+	@IsNotEmpty({ message: 'O e-mail não pode ser vazio.' })
+	email?: string;
 
+	@IsOptional()
 	@IsString()
-	@IsNotEmpty({ message: 'O telefone é obrigatório.' })
-	phone!: string;
+	@IsNotEmpty({ message: 'O telefone não pode ser vazio.' })
+	phone?: string;
 
+	@IsOptional()
 	@IsString()
 	@MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres.' })
-	password!: string;
+	password?: string;
 
+	@IsOptional()
 	@IsString()
-	@IsNotEmpty({ message: 'A função é obrigatória.' })
-	role!: string;
+	@IsNotEmpty({ message: 'A função não pode ser vazia.' })
+	role?: string;
 
 	@IsOptional()
 	@IsBoolean({ message: 'O status ativo deve ser true ou false.' })
 	active?: boolean;
 
+	@IsOptional()
 	@IsEnum(AcessLevel, { message: 'Nível de acesso inválido.' })
-	acess_level!: AcessLevel;
+	acess_level?: AcessLevel;
 
+	@IsOptional()
 	@IsEnum(EmployType, { message: 'Tipo de contratação inválido.' })
-	employ_type!: EmployType;
+	employ_type?: EmployType;
 
+	@IsOptional()
 	@IsEnum(ShiftType, { message: 'Turno inválido.' })
-	shift!: ShiftType;
+	shift?: ShiftType;
 
 	@IsOptional()
 	@IsDateString({}, { message: 'A data de contratação deve ser válida.' })
@@ -69,7 +78,8 @@ export class RegisterUserDto {
 	@IsString()
 	bankName?: string;
 
+	@IsOptional()
 	@IsInt({ message: 'A unidade deve ser um número inteiro.' })
 	@Min(1)
-	storeUnitId!: number;
+	storeUnitId?: number;
 }
