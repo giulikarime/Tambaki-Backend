@@ -29,15 +29,15 @@ model StoreUnit {
 }
 
 model Client {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  email       String   @db.VarChar(100)
-  phone       String   @db.VarChar(11)
-  restaurant  String   @db.VarChar(150)
-  password    String   @db.VarChar(60)
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(100)
+  email        String   @db.VarChar(100)
+  phone        String   @db.VarChar(11)
+  restaurant   String   @db.VarChar(150)
+  password     String   @db.VarChar(60)
   access_level String   @db.VarChar(100)
-  status      Boolean
-  createDate  DateTime @default(now()) @db.Date
+  status       Boolean
+  createDate   DateTime @default(now()) @db.Date
 }
 
 model User {
@@ -100,27 +100,30 @@ model SupplierProducts {
 }
 
 model Product {
-  id               Int              @id @default(autoincrement())
-  name             String           @db.VarChar(150)
+  id               Int                    @id @default(autoincrement())
+  name             String                 @db.VarChar(150)
   cost_price       Float
   category         ProductsCategory
-  brand            String           @db.VarChar(150)
+  brand            String                 @db.VarChar(150)
   allergens        Allergens[]
   stock_quantity   Int
-  unit_of_measure  String           @db.VarChar(50)
+  unit_of_measure  String                 @db.VarChar(50)
   current_stock    Int
   min_stock        Int
   max_stock        Int
   manufacture_date DateTime
   expiration_date  DateTime
-  available        Boolean          @default(true)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  available        Boolean                @default(true)
+  storageLocation  ProductStorageLocation
+  status           ProductStatus
+  batch            String                 @db.VarChar(30)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
   supplierId       Int
   unitId           Int
   notification     Notification[]
-  supplier         Supplier         @relation(fields: [supplierId], references: [id])
-  unit             StoreUnit        @relation(fields: [unitId], references: [id])
+  supplier         Supplier               @relation(fields: [supplierId], references: [id])
+  unit             StoreUnit              @relation(fields: [unitId], references: [id])
 }
 
 model Menu {
@@ -270,4 +273,20 @@ enum ReservationStatus {
   Cancelada
   Concluida
   NoShow
+}
+
+enum ProductStorageLocation {
+  CamaraFria
+  Freezer
+  Geladeira
+  Despensa_EstoqueSeco
+  Bar_Adega
+  Descartaveis
+  Outro
+}
+
+enum ProductStatus {
+  Ativo
+  Inativo
+  Descontinuado
 }
