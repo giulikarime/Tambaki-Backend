@@ -10,7 +10,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { Allergens, ProductsCategory } from '../../generated/prisma/client';
+import { Allergens, ProductsCategory } from '../../generated/prisma/enums';
 
 export class CreateProductDto {
   @IsString()

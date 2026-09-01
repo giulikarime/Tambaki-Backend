@@ -62,8 +62,19 @@ export class ProductsService {
 
   async findAll() {
     return this.prisma.product.findMany({
-      include: { supplier: true },
+      include: { supplier: true, unit: true },
     });
+  }
+
+  async findOne(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: { supplier: true, unit: true },
+    });
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado.');
+    }
+    return product;
   }
 
   async update(id: number, dto: UpdateProductDto) {
