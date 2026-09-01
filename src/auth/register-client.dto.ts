@@ -29,7 +29,7 @@ export class RegisterClientDto {
 
   @IsString()
   @IsNotEmpty({ message: 'O nível de acesso é obrigatório.' })
-  acess_level!: string;
+  access_level!: string;
 
   @IsBoolean()
   status!: boolean;
