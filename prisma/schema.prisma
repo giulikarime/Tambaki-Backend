@@ -77,7 +77,7 @@ model Supplier {
   id               Int                @id @default(autoincrement())
   company_name     String             @db.VarChar(255)
   trade_name       String             @db.VarChar(255)
-  cnpj             Int
+  cnpj             String             @db.VarChar(14)
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
@@ -252,12 +252,13 @@ enum TableStatus {
 }
 
 enum ProductsCategory {
-  Carnes
+  Carnes_e_Pescados
   Hortifrúti
-  Laticínios
+  Laticínios_e_Frios
   Embutidos
   Secos
-  Limpeza
+  Bebida_Alcoolica
+  Bebida_nao_Alcoolica
 }
 
 enum Allergens {
@@ -276,7 +277,7 @@ enum ReservationStatus {
 }
 
 enum ProductStorageLocation {
-  CamaraFria
+  Camara_Fria
   Freezer
   Geladeira
   Despensa_EstoqueSeco
