@@ -30,13 +30,8 @@ export class AuthService {
 
     const client = await this.prisma.client.create({
       data: {
-        name: dto.name,
-        email: dto.email,
-        phone: dto.phone,
-        restaurant: dto.restaurant,
+        ...dto,
         password: hashedPassword,
-        access_level: dto.access_level,
-        status: dto.status,
       },
     });
 
