@@ -11,7 +11,7 @@ import {
 	Min,
 	MinLength,
 } from 'class-validator';
-import { AcessLevel, EmployType, ShiftType } from '../../generated/prisma/enums';
+import { AccessLevel, EmployType, ShiftType } from '../../generated/prisma/enums';
 
 export class RegisterUserDto {
 	@IsString()
@@ -42,8 +42,8 @@ export class RegisterUserDto {
 	@IsBoolean({ message: 'O status ativo deve ser true ou false.' })
 	active?: boolean;
 
-	@IsEnum(AcessLevel, { message: 'Nível de acesso inválido.' })
-	acess_level!: AcessLevel;
+	@IsEnum(AccessLevel, { message: 'Nível de acesso inválido.' })
+	access_level!: AccessLevel;
 
 	@IsEnum(EmployType, { message: 'Tipo de contratação inválido.' })
 	employ_type!: EmployType;

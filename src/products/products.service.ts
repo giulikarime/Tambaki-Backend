@@ -45,12 +45,16 @@ export class ProductsService {
         stock_quantity: dto.stock_quantity,
         unit_of_measure: dto.unit_of_measure,
         current_stock: dto.current_stock,
+        max_stock: dto.max_stock,
         min_stock: dto.min_stock,
         manufacture_date: new Date(dto.manufacture_date),
         expiration_date: new Date(dto.expiration_date),
         available: dto.available ?? true,
         supplierId: dto.supplierId,
         unitId: dto.unitId,
+        batch: dto.batch,
+        storageLocation: dto.storageLocation,
+        status: dto.status,
       },
     });
 

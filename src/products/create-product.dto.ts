@@ -10,7 +10,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { Allergens, ProductsCategory } from '../../generated/prisma/enums';
+import { Allergens, ProductsCategory, ProductStatus, ProductStorageLocation } from '../../generated/prisma/enums';
 
 export class CreateProductDto {
   @IsString()
@@ -49,6 +49,10 @@ export class CreateProductDto {
   @Min(0, { message: 'O estoque mínimo não pode ser negativo.' })
   min_stock!: number;
 
+  @IsInt()
+  @Min(0, { message: 'O estoque máximo não pode ser negativo.' })
+  max_stock!: number;
+
   @IsDateString({}, { message: 'Data de fabricação inválida.' })
   manufacture_date!: string;
 
@@ -58,6 +62,17 @@ export class CreateProductDto {
   @IsBoolean()
   @IsOptional()
   available?: boolean;
+
+  @IsEnum(ProductStorageLocation, { message: 'Local de armazenamento inválido.' })
+  storageLocation!: ProductStorageLocation;
+
+  @IsEnum(ProductStatus, { message: 'Status inválido. Use "Ativo", "Inativo" ou "Descontinuado".' })
+  status!: ProductStatus;
+
+
+  @IsString()
+  @IsNotEmpty({ message: 'O campo de lote é obrigatório.' })
+  batch!: string;
 
   @IsInt()
   @IsNotEmpty({ message: 'O fornecedor é obrigatório.' })

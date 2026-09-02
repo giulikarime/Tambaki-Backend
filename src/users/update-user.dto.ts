@@ -11,7 +11,7 @@ import {
 	Min,
 	MinLength,
 } from 'class-validator';
-import { AcessLevel, EmployType, ShiftType } from '../../generated/prisma/enums';
+import { AccessLevel, EmployType, ShiftType } from '../../generated/prisma/enums';
 
 export class UpdateUserDto {
 	@IsOptional()
@@ -49,8 +49,8 @@ export class UpdateUserDto {
 	active?: boolean;
 
 	@IsOptional()
-	@IsEnum(AcessLevel, { message: 'Nível de acesso inválido.' })
-	acess_level?: AcessLevel;
+	@IsEnum(AccessLevel, { message: 'Nível de acesso inválido.' })
+	access_level?: AccessLevel;
 
 	@IsOptional()
 	@IsEnum(EmployType, { message: 'Tipo de contratação inválido.' })
