@@ -77,7 +77,7 @@ model Supplier {
   id               Int                @id @default(autoincrement())
   company_name     String             @db.VarChar(255)
   trade_name       String             @db.VarChar(255)
-  cnpj             Int
+  cnpj             String             @db.VarChar(14)
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
@@ -111,8 +111,8 @@ model Product {
   current_stock    Int
   min_stock        Int
   max_stock        Int
-  manufacture_date DateTime
-  expiration_date  DateTime
+  manufacture_date DateTime               @db.Date
+  expiration_date  DateTime               @db.Date
   available        Boolean                @default(true)
   storageLocation  ProductStorageLocation
   status           ProductStatus
@@ -139,6 +139,13 @@ model Menu {
   unit        StoreUnit    @relation(fields: [unitId], references: [id])
   order       Order[]
   orderItems  OrderItem[]
+  tags        Tag[]        @relation("MenuToTag")
+}
+model Tag {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  color String?
+  menu  Menu[]  @relation("MenuToTag")
 }
 
 model Table {
@@ -252,12 +259,13 @@ enum TableStatus {
 }
 
 enum ProductsCategory {
-  Carnes
+  Carnes_e_Pescados
   Hortifrúti
-  Laticínios
+  Laticínios_e_Frios
   Embutidos
   Secos
-  Limpeza
+  Bebida_Alcoolica
+  Bebida_nao_Alcoolica
 }
 
 enum Allergens {
@@ -265,6 +273,17 @@ enum Allergens {
   Glúten
   Oleaginosas
   Frutos_do_mar
+}
+
+enum UnitOfMeasure {
+  kg
+  g
+  mg
+  L
+  mL
+  un
+  cx
+  pct
 }
 
 enum ReservationStatus {
@@ -276,13 +295,12 @@ enum ReservationStatus {
 }
 
 enum ProductStorageLocation {
-  CamaraFria
+  Camara_Fria
   Freezer
   Geladeira
-  Despensa_EstoqueSeco
+  Despensa_Estoque_Seco
   Bar_Adega
   Descartaveis
-  Outro
 }
 
 enum ProductStatus {

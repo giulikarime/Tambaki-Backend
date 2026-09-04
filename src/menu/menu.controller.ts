@@ -33,4 +33,15 @@ export class MenuController {
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.menuService.remove(id);
   }
+
+  @Post(':id/tags/:tagId')
+  @HttpCode(HttpStatus.CREATED)
+  async addTag(@Param('id', ParseIntPipe) id: number, @Param('tagId', ParseIntPipe) tagId: number) {
+    return this.menuService.addTag(id, tagId);
+  }
+
+  @Delete(':id/tags/:tagId')
+  async removeTag(@Param('id', ParseIntPipe) id: number, @Param('tagId', ParseIntPipe) tagId: number) {
+    return this.menuService.removeTag(id, tagId);
+  }
 }

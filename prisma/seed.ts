@@ -17,12 +17,12 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
 
   const storeData = {
-      company_name: 'Doce Sabor LTDA',
-      trade_name: 'Sabor & Cia',
-      cnpj: '12345678000199',
-      adress: 'Rua das Flores, 123, Centro',
-      email: 'docesabor@email.com',
-      phone: '11987654321',
+    company_name: 'Doce Sabor LTDA',
+    trade_name: 'Sabor & Cia',
+    cnpj: '12345678000199',
+    adress: 'Rua das Flores, 123, Centro',
+    email: 'docesabor@email.com',
+    phone: '11987654321',
   };
 
   const storeUnit = await prisma.storeUnit.upsert({
@@ -63,36 +63,36 @@ async function main() {
 
   const users = [
     {
-            name: 'Carlos Silva',
-            cpf: '12345678901',
-            email: 'carlos.gerente@saborecia.com',
-            phone: '11911112222',
-            password: 'password_1', 
-            role: 'Gerente Geral',
-            access_level: AccessLevel.Master, 
-            employ_type: EmployType.CLT,  
-            shift: ShiftType.Full_Time,   
-            hire_date: new Date('2023-01-15'),
-            weekly_hours: 44,
-            salary: 4500.00,
-            bankName: 'Banco do Brasil',
-            active: true,
+      name: 'Carlos Silva',
+      cpf: '12345678901',
+      email: 'carlos.gerente@saborecia.com',
+      phone: '11911112222',
+      password: 'password_1',
+      role: 'Gerente Geral',
+      access_level: AccessLevel.Master,
+      employ_type: EmployType.CLT,
+      shift: ShiftType.Full_Time,
+      hire_date: new Date('2023-01-15'),
+      weekly_hours: 44,
+      salary: 4500.00,
+      bankName: 'Banco do Brasil',
+      active: true,
     },
     {
-            name: 'Ana Souza',
-            cpf: '98765432100',
-            email: 'ana.souza@saborecia.com',
-            phone: '11933334444',
-            password: 'password_2',
-            role: 'Atendente',
-            access_level: AccessLevel.Junior, 
-            employ_type: EmployType.CLT,  
-            shift: ShiftType.Noite,       
-            hire_date: new Date('2023-06-01'),
-            weekly_hours: 36,
-            salary: 2100.00,
-            bankName: 'Nubank',
-            active: true,
+      name: 'Ana Souza',
+      cpf: '98765432100',
+      email: 'ana.souza@saborecia.com',
+      phone: '11933334444',
+      password: 'password_2',
+      role: 'Atendente',
+      access_level: AccessLevel.Junior,
+      employ_type: EmployType.CLT,
+      shift: ShiftType.Noite,
+      hire_date: new Date('2023-06-01'),
+      weekly_hours: 36,
+      salary: 2100.00,
+      bankName: 'Nubank',
+      active: true,
     },
   ];
 
@@ -111,7 +111,7 @@ async function main() {
     });
   }
 
-    const table = await prisma.table.upsert({
+  const table = await prisma.table.upsert({
     where: { id: 1 },
     update: {
       table_number: 1,
@@ -139,17 +139,47 @@ async function main() {
         status: 'Pendente',
         tableId: table.id,
         unitId: storeUnit.id,
-      },  
+      },
       {
         name: 'Larissa Manoela',
         phone: '11912345678',
-        quantityPeople: 2, 
+        quantityPeople: 2,
         startsAt: new Date('2023-10-16T18:30:00Z'),
         status: 'Confirmada',
         tableId: table.id,
         unitId: storeUnit.id,
       },
 
+    ]
+  });
+
+  await prisma.supplier.deleteMany();
+  await prisma.supplier.createMany({
+    data: [
+      {
+        company_name: 'Mercado Santa Luzia LTDA ',
+        trade_name: 'Mercado Santa Luzia',
+        cnpj: '12345678000195',
+        phone: "11987654321",
+        email: "pedidos@mercadosantaluzia.com.br",
+        adress: "Ceagesp - Av. Dr. Gastão Vidigal, 1946, Pavilhão M-10, Vila Leopoldina - São Paulo / SP",
+        businnes_hours: "Seg-Sáb: 04:00 às 14:00",
+        resposible_name: "Michael Jaylison",
+        payment_terms: "Semanal / 7 dias",
+        lead_time_days: 1,
+      },
+      {
+        company_name: "Distribuidora de Bebidas Vale do Sol S.A.",
+        trade_name: "Vale do Sol Bebidas",
+        cnpj: '98765432000110',
+        phone: "1133445566",
+        email: "vendas@valedosolbebidas.com.br",
+        adress: "Av. Imperatriz Leopoldina, 800, Vila Leopoldina - São Paulo / SP",
+        businnes_hours: "Seg-Sex: 07:00 às 17:00",
+        resposible_name: "Stefanni Germanota",
+        payment_terms: "14/28 dias",
+        lead_time_days: 2
+      }
     ]
   });
 

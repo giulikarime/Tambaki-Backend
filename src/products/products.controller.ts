@@ -13,6 +13,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
+import { ProductsCategory, Allergens, ProductStorageLocation, ProductStatus, UnitOfMeasure } from '../../generated/prisma/enums';
 
 @Controller('products')
 export class ProductsController {
@@ -27,6 +28,17 @@ export class ProductsController {
   @Get()
   async findAll() {
     return this.productsService.findAll();
+  }
+
+  @Get('enums')
+  async getEnums() {
+      return {
+          categories: Object.values(ProductsCategory),
+          allergens: Object.values(Allergens),
+          storageLocations: Object.values(ProductStorageLocation),
+          statuses: Object.values(ProductStatus),
+          unitOfMeasure: Object.values(UnitOfMeasure),
+      };
   }
 
   @Get(':id')
