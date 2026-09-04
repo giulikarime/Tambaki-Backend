@@ -9,9 +9,9 @@ export class RegisterSupplierDto {
     @IsNotEmpty({ message: 'O nome fantasia é obrigatório.' })
     trade_name!: string;
 
-    @IsInt()
+    @IsString()
     @IsNotEmpty({ message: 'O CNPJ é obrigatório.' })
-    cnpj!: number;
+    cnpj!: string;
     
     @IsString()
     @IsNotEmpty({ message: 'O telefone é obrigatório.' })

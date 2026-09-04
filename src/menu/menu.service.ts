@@ -13,8 +13,12 @@ export class MenuService {
       throw new NotFoundException('Unidade não encontrada.');
     }
 
+    const { tags, ...menuData } = dto;
     const menuItem = await this.prisma.menu.create({
-      data: dto
+      data: {
+        ...menuData,
+        ...(tags ? { tags: { create: tags } } : {}),
+      },
     });
 
     return { message: 'Item do cardápio criado com sucesso!', menuItem };

@@ -12,8 +12,8 @@ export class UpdateSupplierDto {
   trade_name?: string;
 
   @IsOptional()
-  @IsInt()
-  cnpj?: number;
+  @IsString()
+  cnpj?: string;
 
   @IsOptional()
   @IsString()
