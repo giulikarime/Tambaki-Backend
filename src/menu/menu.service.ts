@@ -21,7 +21,16 @@ export class MenuService {
         price: dto.price,
         available: dto.available,
         unitId: dto.unitId,
+        tags: dto.tags
+          ? {
+              connectOrCreate: dto.tags.map((tag) => ({
+                where: { name: tag.name},
+                create: { name: tag.name, color: tag.color }
+              }))
+          }
+        : undefined,
       },
+      include: { tags: true},
     });
 
     return { message: 'Item do cardápio criado com sucesso!', menuItem };
@@ -32,7 +41,10 @@ export class MenuService {
   }
 
   async findOne(id: number) {
-    const menuItem = await this.prisma.menu.findUnique({ where: { id } });
+    const menuItem = await this.prisma.menu.findUnique({ 
+      where: { id }, 
+      include: { tags: true} 
+    });
     if (!menuItem) {
       throw new NotFoundException('Item do cardápio não encontrado.');
     }
@@ -40,14 +52,16 @@ export class MenuService {
   }
 
   async update(id: number, dto: UpdateMenuDto) {
-    const menuItem = await this.prisma.menu.findUnique({ where: { id } });
+    const menuItem = await this.prisma.menu.findUnique({ 
+      where: { id } 
+    });
     if (!menuItem) {
       throw new NotFoundException('Item do cardápio não encontrado.');
     }
 
     const updated = await this.prisma.menu.update({
       where: { id },
-      data: dto,
+      data: dto
     });
 
     return { message: 'Item do cardápio atualizado com sucesso!', menuItem: updated };
@@ -62,5 +76,39 @@ export class MenuService {
     await this.prisma.menu.delete({ where: { id } });
 
     return { message: 'Item do cardápio excluído com sucesso!' };
+  }
+
+  async addTag(menuId: number, tagId: number) {
+    const menuItem = await this.prisma.menu.findUnique({
+      where: { id: menuId }
+    });
+    if (!menuItem) {
+      throw new NotFoundException('Item do cardápio não encontrado');
+    }
+    const tag = await this.prisma.tag.findUnique({
+      where: { id: tagId }
+    });
+    if (!tag) {
+      throw new NotFoundException('Tag não encontrada')
+    }
+    const updated = await this.prisma.menu.update({
+      where: { id: menuId },
+      data: { tags: { connect: { id: tagId }}},
+      include: { tags: true},
+    });
+    return { message: 'Tag adicionada ao prato!', menuItem: updated };
+  }
+  
+  async removeTag(menuId: number, tagId: number) {
+    const menuItem = await this.prisma.menu.findUnique({ where: { id: menuId } });
+    if (!menuItem) {
+      throw new NotFoundException('Item do cardápio não encontrado.');
+    }
+    const updated = await this.prisma.menu.update({
+      where: { id: menuId },
+      data: { tags: { disconnect: { id: tagId } } },
+      include: { tags: true },
+    });
+    return { message: 'Tag removida do prato!', menuItem: updated };
   }
 }
