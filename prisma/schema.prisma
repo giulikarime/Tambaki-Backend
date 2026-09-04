@@ -111,8 +111,8 @@ model Product {
   current_stock    Int
   min_stock        Int
   max_stock        Int
-  manufacture_date DateTime
-  expiration_date  DateTime
+  manufacture_date DateTime               @db.Date
+  expiration_date  DateTime               @db.Date
   available        Boolean                @default(true)
   storageLocation  ProductStorageLocation
   status           ProductStatus
@@ -268,6 +268,17 @@ enum Allergens {
   Frutos_do_mar
 }
 
+enum UnitOfMeasure {
+  kg
+  g
+  mg
+  L
+  mL
+  un
+  cx
+  pct
+}
+
 enum ReservationStatus {
   Pendente
   Confirmada
@@ -280,10 +291,9 @@ enum ProductStorageLocation {
   Camara_Fria
   Freezer
   Geladeira
-  Despensa_EstoqueSeco
+  Despensa_Estoque_Seco
   Bar_Adega
   Descartaveis
-  Outro
 }
 
 enum ProductStatus {
