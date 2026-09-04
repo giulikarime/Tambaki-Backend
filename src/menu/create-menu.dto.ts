@@ -1,4 +1,5 @@
-import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray,IsBoolean, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { MenuCategory } from '../../generated/prisma/client';
 
 export class CreateMenuDto {
@@ -24,4 +25,20 @@ export class CreateMenuDto {
   @IsInt()
   @IsNotEmpty()
   unitId!: number;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagInputDto)
+  tags?: TagInputDto[];
+}
+
+class TagInputDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsOptional()
+  @IsString()
+  color?: string;
 }

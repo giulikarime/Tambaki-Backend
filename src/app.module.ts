@@ -9,9 +9,10 @@ import { OrdersModule } from './orders/orders.module';
 import { ReservationsModule } from './reservations/reservations.module'
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
+import { MenuModule } from './menu/menu.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, OrdersModule, ReservationsModule, ConfigModule.forRoot({ isGlobal: true }), TablesModule, UsersModule, ProductsModule],
+  imports: [PrismaModule, AuthModule, OrdersModule, ReservationsModule, ConfigModule.forRoot({ isGlobal: true }), TablesModule, UsersModule, ProductsModule, MenuModule],
   controllers: [AppController],
   providers: [AppService],
 })

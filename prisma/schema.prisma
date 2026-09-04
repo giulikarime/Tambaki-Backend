@@ -139,6 +139,13 @@ model Menu {
   unit        StoreUnit    @relation(fields: [unitId], references: [id])
   order       Order[]
   orderItems  OrderItem[]
+  tags        Tag[]        @relation("MenuToTag")
+}
+model Tag {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  color String?
+  menu  Menu[]  @relation("MenuToTag")
 }
 
 model Table {
