@@ -36,6 +36,31 @@ async function main() {
     create: storeData,
   });
 
+  const supplierData = {
+    company_name: 'Peixe Nobre LTDA',
+    trade_name: 'Peixe Nobre',
+    cnpj: 123456789,
+    phone: '11988887777',
+    email: 'contato@peixenobre.com',
+    adress: 'Av. Amazonas, 500',
+    businnes_hours: '08:00 às 18:00',
+    resposible_name: 'Roberto Santos',
+    payment_terms: '30 dias',
+    lead_time_days: 3,
+  };
+
+  const supplier = await prisma.supplier.upsert({
+    where: {
+      company_name_cnpj_email: {
+        company_name: supplierData.company_name,
+        cnpj: supplierData.cnpj,
+        email: supplierData.email,
+      },
+    },
+    update: supplierData,
+    create: supplierData,
+  });
+
   const users = [
     {
       name: 'Carlos Silva',

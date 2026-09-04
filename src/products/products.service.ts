@@ -36,26 +36,7 @@ export class ProductsService {
     }
 
     const product = await this.prisma.product.create({
-      data: {
-        name: dto.name,
-        cost_price: dto.cost_price,
-        category: dto.category,
-        brand: dto.brand,
-        allergens: dto.allergens ?? [],
-        stock_quantity: dto.stock_quantity,
-        unit_of_measure: dto.unit_of_measure,
-        current_stock: dto.current_stock,
-        max_stock: dto.max_stock,
-        min_stock: dto.min_stock,
-        manufacture_date: new Date(dto.manufacture_date),
-        expiration_date: new Date(dto.expiration_date),
-        available: dto.available ?? true,
-        supplierId: dto.supplierId,
-        unitId: dto.unitId,
-        batch: dto.batch,
-        storageLocation: dto.storageLocation,
-        status: dto.status,
-      },
+      data: dto
     });
 
     return {

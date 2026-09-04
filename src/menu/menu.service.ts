@@ -14,23 +14,7 @@ export class MenuService {
     }
 
     const menuItem = await this.prisma.menu.create({
-      data: {
-        name: dto.name,
-        description: dto.description,
-        category: dto.category,
-        price: dto.price,
-        available: dto.available,
-        unitId: dto.unitId,
-        tags: dto.tags
-          ? {
-              connectOrCreate: dto.tags.map((tag) => ({
-                where: { name: tag.name},
-                create: { name: tag.name, color: tag.color }
-              }))
-          }
-        : undefined,
-      },
-      include: { tags: true},
+      data: dto
     });
 
     return { message: 'Item do cardápio criado com sucesso!', menuItem };
