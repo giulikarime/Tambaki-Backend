@@ -25,7 +25,9 @@ export class MenuService {
   }
 
   async findAll() {
-    return this.prisma.menu.findMany();
+    return this.prisma.menu.findMany({
+      include: { tags: true },
+    });
   }
 
   async findOne(id: number) {

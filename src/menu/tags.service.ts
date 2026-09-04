@@ -1,10 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateTagDto } from './create-tag.dto';
 import { UpdateTagDto } from './update-tag.dto';
 
 @Injectable()
 export class TagsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async create(dto: CreateTagDto) {
+    const existingTag = await this.prisma.tag.findUnique({ where: { name: dto.name } });
+    if (existingTag) {
+      throw new ConflictException('Já existe uma tag com esse nome.');
+    }
+
+    const tag = await this.prisma.tag.create({ data: dto });
+    return { message: 'Tag criada com sucesso!', tag };
+  }
 
   async findAll() {
     return this.prisma.tag.findMany();

@@ -107,6 +107,27 @@ Os principais campos de produto são: `name`, `cost_price`, `category`, `brand`,
 
 Os campos de criação são: `name`, `description`, `category`, `price`, `available` e `unitId`.
 
+### Tags
+
+| Método | Rota | O que faz |
+| --- | --- | --- |
+| `POST` | `/tags` | Cadastra uma tag. Retorna `201 Created`. |
+| `GET` | `/tags` | Lista todas as tags. |
+| `PATCH` | `/tags/:id` | Atualiza uma tag. |
+| `DELETE` | `/tags/:id` | Exclui uma tag. |
+
+Para adicionar uma tag a um item do cardápio:
+
+Use os IDs do item do cardápio e da tag já cadastrados:
+
+```http
+POST /menu/1/tags/1
+```
+
+Nesse exemplo, o primeiro `1` é o ID do item do cardápio e o segundo `1` é o ID da tag. Essa rota não precisa de corpo JSON.
+
+Para consultar o item com suas tags, use `GET /menu/1`. Para remover a associação, use `DELETE /menu/1/tags/1`.
+
 ### Pedidos
 
 | Método | Rota | O que faz |
@@ -114,8 +135,10 @@ Os campos de criação são: `name`, `description`, `category`, `price`, `availa
 | `POST` | `/orders` | Cria um pedido. Retorna `201 Created`. |
 | `GET` | `/orders` | Lista todos os pedidos. |
 | `GET` | `/orders/:id` | Busca um pedido pelo ID. |
+| `PATCH` | `/orders/:id` | Atualiza o tipo, status ou mesa do pedido. |
 | `POST` | `/orders/:id/items` | Adiciona um item a um pedido. Retorna `201 Created`. |
 | `PATCH` | `/orders/:id/close` | Fecha um pedido. |
+| `DELETE` | `/orders/:id` | Exclui um pedido e seus itens. |
 
 Para criar um pedido, envie `tableId` e `service_type`; também podem ser enviados `status`, `total_value`, `unitId` e `menuId`. Para adicionar um item, envie `menuId` e `quantity`.
 
@@ -126,7 +149,9 @@ Para criar um pedido, envie `tableId` e `service_type`; também podem ser enviad
 | `POST` | `/reservations` | Cria uma reserva. Retorna `201 Created`. |
 | `GET` | `/reservations` | Lista todas as reservas. |
 | `GET` | `/reservations/:id` | Busca uma reserva pelo ID. |
+| `PATCH` | `/reservations/:id` | Atualiza os dados e o período da reserva. |
 | `PATCH` | `/reservations/:id/cancel` | Cancela uma reserva. |
+| `DELETE` | `/reservations/:id` | Exclui uma reserva. |
 
 Os campos obrigatórios para criar uma reserva são `name`, `phone`, `quantityPeople`, `startsAt`, `endsAt` e `tableId`. `status` e `unitId` são opcionais.
 

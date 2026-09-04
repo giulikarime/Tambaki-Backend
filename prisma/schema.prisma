@@ -203,6 +203,7 @@ model Reservation {
   phone          String            @db.VarChar(11)
   quantityPeople Int
   startsAt       DateTime
+  endsAt         DateTime
   status         ReservationStatus @default(Pendente)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt

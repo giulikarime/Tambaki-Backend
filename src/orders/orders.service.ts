@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './create-order.dto';
 import { AddOrderItemDto } from './add-order-item.dto';
+import { UpdateOrderDto } from './update-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -46,6 +47,61 @@ export class OrdersService {
       throw new NotFoundException('Comanda não encontrada.');
     }
     return order;
+  }
+
+  async update(id: number, dto: UpdateOrderDto) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Comanda não encontrada.');
+    }
+
+    if (dto.tableId !== undefined) {
+      const table = await this.prisma.table.findUnique({ where: { id: dto.tableId } });
+      if (!table) {
+        throw new NotFoundException('Mesa não encontrada.');
+      }
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { id },
+      data: {
+        service_type: dto.service_type,
+        status: dto.status,
+        ...(dto.tableId !== undefined ? { tableId: dto.tableId } : {}),
+        ...(dto.status === 'Fechada' || dto.status === 'Paga'
+          ? { closed_at: order.closed_at ?? new Date() }
+          : {}),
+      },
+      include: { items: { include: { menu: true } }, table: true },
+    });
+
+    return { message: 'Comanda atualizada com sucesso!', order: updatedOrder };
+  }
+
+  async delete(id: number) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Comanda não encontrada.');
+    }
+
+    await this.prisma.$transaction(async (transaction) => {
+      await transaction.orderItem.deleteMany({ where: { orderId: id } });
+      await transaction.order.delete({ where: { id } });
+
+      if (order.status === 'Aberta') {
+        const stillOpen = await transaction.order.count({
+          where: { tableId: order.tableId, status: 'Aberta' },
+        });
+        if (stillOpen === 0) {
+          await transaction.table.update({
+            where: { id: order.tableId },
+            data: { status: 'Livre' },
+          });
+        }
+      }
+    });
+
+    return { message: 'Comanda excluída com sucesso!' };
   }
 
   async addItem(orderId: number, dto: AddOrderItemDto) {
