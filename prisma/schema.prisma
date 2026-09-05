@@ -271,6 +271,7 @@ enum ProductsCategory {
 }
 
 enum Allergens {
+  Nenhum
   Laticinios
   Glúten
   Oleaginosas

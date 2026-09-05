@@ -23,10 +23,16 @@ export class CreateReservationDto {
   quantityPeople!: number;
 
   @IsDateString()
-  startsAt!: string;
+  startsAtDate!: string;
 
   @IsDateString()
-  endsAt!: string;
+  startsAtHours!: string;
+
+  @IsDateString()
+  endsAtDate!: string;
+
+  @IsDateString()
+  endsAtHours!: string;
 
   @IsInt()
   @IsNotEmpty()

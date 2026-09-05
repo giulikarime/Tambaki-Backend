@@ -10,7 +10,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { Allergens, ProductsCategory, ProductStatus, ProductStorageLocation } from '../../generated/prisma/enums';
+import { Allergens, ProductsCategory, ProductStatus, ProductStorageLocation, UnitOfMeasure } from '../../generated/prisma/enums';
 
 export class CreateProductDto {
   @IsString()
@@ -37,13 +37,8 @@ export class CreateProductDto {
   @Min(0, { message: 'A quantidade em estoque não pode ser negativa.' })
   stock_quantity!: number;
 
-  @IsString()
-  @IsNotEmpty({ message: 'A unidade de medida é obrigatória.' })
-  unit_of_measure!: string;
-
-  @IsInt()
-  @Min(0, { message: 'O estoque atual não pode ser negativo.' })
-  current_stock!: number;
+  @IsEnum(UnitOfMeasure,{ message: 'A unidade de medida é obrigatória.' })
+  unit_of_measure!: UnitOfMeasure;
 
   @IsInt()
   @Min(0, { message: 'O estoque mínimo não pode ser negativo.' })
