@@ -37,7 +37,7 @@ model Client {
   password     String   @db.VarChar(60)
   access_level String   @db.VarChar(100)
   status       Boolean
-  createDate   DateTime @default(now()) @db.Date
+  createDate   DateTime @default(now())
 }
 
 model User {
@@ -51,7 +51,7 @@ model User {
   access_level     AccessLevel
   employ_type      EmployType
   shift            ShiftType
-  hire_date        DateTime?
+  hire_date        DateTime?         @db.Date
   weekly_hours     Int?
   salary           Decimal?          @db.Decimal(10, 2)
   bankName         String?           @db.VarChar(150)
@@ -67,8 +67,8 @@ model EmployeDocument {
   id           Int       @id @default(autoincrement())
   documentType String
   file_Url     String
-  issuedAt     DateTime
-  valid_until  DateTime?
+  issuedAt     DateTime  @db.Date
+  valid_until  DateTime? @db.Date
   userId       Int
   user         User      @relation(fields: [userId], references: [id])
 }
@@ -77,7 +77,7 @@ model Supplier {
   id               Int                @id @default(autoincrement())
   company_name     String             @db.VarChar(255)
   trade_name       String             @db.VarChar(255)
-  cnpj             Int
+  cnpj             String             @db.VarChar(14)
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
@@ -107,13 +107,11 @@ model Product {
   brand            String                 @db.VarChar(150)
   allergens        Allergens[]
   stock_quantity   Int
-  unit_of_measure  String                 @db.VarChar(50)
-  current_stock    Int
+  unit_of_measure  UnitOfMeasure
   min_stock        Int
   max_stock        Int
-  manufacture_date DateTime
-  expiration_date  DateTime
-  available        Boolean                @default(true)
+  manufacture_date DateTime               @db.Date
+  expiration_date  DateTime               @db.Date
   storageLocation  ProductStorageLocation
   status           ProductStatus
   batch            String                 @db.VarChar(30)
@@ -139,6 +137,14 @@ model Menu {
   unit        StoreUnit    @relation(fields: [unitId], references: [id])
   order       Order[]
   orderItems  OrderItem[]
+  tags        Tag[]        @relation("MenuToTag")
+}
+
+model Tag {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  color String?
+  menu  Menu[]  @relation("MenuToTag")
 }
 
 model Table {
@@ -195,7 +201,10 @@ model Reservation {
   name           String            @db.VarChar(255)
   phone          String            @db.VarChar(11)
   quantityPeople Int
-  startsAt       DateTime
+  startsAtDate   DateTime          @db.Date
+  startsAtHours  DateTime          @db.Time
+  endsAtDate     DateTime          @db.Date
+  endsAtHours    DateTime          @db.Time
   status         ReservationStatus @default(Pendente)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -204,8 +213,8 @@ model Reservation {
   table          Table             @relation(fields: [tableId], references: [id])
   unit           StoreUnit         @relation(fields: [unitId], references: [id])
 
-  @@index([tableId, startsAt])
-  @@index([unitId, startsAt])
+  @@index([tableId, startsAtDate, startsAtHours])
+  @@index([unitId, endsAtDate, endsAtHours])
 }
 
 enum AccessLevel {
@@ -252,12 +261,13 @@ enum TableStatus {
 }
 
 enum ProductsCategory {
-  Carnes
+  Carnes_e_Pescados
   Hortifrúti
-  Laticínios
+  Laticínios_e_Frios
   Embutidos
   Secos
-  Limpeza
+  Bebida_Alcoolica
+  Bebida_nao_Alcoolica
 }
 
 enum Allergens {
@@ -265,6 +275,17 @@ enum Allergens {
   Glúten
   Oleaginosas
   Frutos_do_mar
+}
+
+enum UnitOfMeasure {
+  kg
+  g
+  mg
+  L
+  mL
+  un
+  cx
+  pct
 }
 
 enum ReservationStatus {
@@ -276,13 +297,12 @@ enum ReservationStatus {
 }
 
 enum ProductStorageLocation {
-  CamaraFria
+  Camara_Fria
   Freezer
   Geladeira
-  Despensa_EstoqueSeco
+  Despensa_Estoque_Seco
   Bar_Adega
   Descartaveis
-  Outro
 }
 
 enum ProductStatus {

@@ -22,16 +22,4 @@ export class UpdateMenuDto {
   @IsOptional()
   @IsBoolean()
   available?: boolean;
-
-  
 }
-
-
-
-
-
-
-
-
-
-

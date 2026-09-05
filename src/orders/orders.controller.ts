@@ -1,7 +1,8 @@
-import {Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './create-order.dto';
 import { AddOrderItemDto } from './add-order-item.dto';
+import { UpdateOrderDto } from './update-order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -23,6 +24,11 @@ export class OrdersController {
     return this.ordersService.findOne(id);
   }
 
+  @Patch(':id')
+  async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateOrderDto) {
+    return this.ordersService.update(id, dto);
+  }
+
   @Post(':id/items')
   @HttpCode(HttpStatus.CREATED)
   async addItem(@Param('id', ParseIntPipe) id: number, @Body() dto: AddOrderItemDto) {
@@ -32,5 +38,11 @@ export class OrdersController {
   @Patch(':id/close')
   async close(@Param('id', ParseIntPipe) id: number) {
     return this.ordersService.close(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    return this.ordersService.delete(id);
   }
 }
