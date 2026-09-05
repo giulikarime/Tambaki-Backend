@@ -16,7 +16,9 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
- await prisma.reservation.deleteMany();
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.reservation.deleteMany();
   await prisma.table.deleteMany();
   await prisma.user.deleteMany();
   await prisma.supplier.deleteMany();
