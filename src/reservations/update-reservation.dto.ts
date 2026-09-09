@@ -27,11 +27,19 @@ export class UpdateReservationDto {
 
   @IsOptional()
   @IsDateString()
-  startsAt?: string;
+  startsAtDate?: string;
 
   @IsOptional()
   @IsDateString()
-  endsAt?: string;
+  startsAtHours?: string;
+
+  @IsOptional()
+  @IsDateString()
+  endsAtDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  endsAtHours?: string;
 
   @IsOptional()
   @IsEnum(ReservationStatus)

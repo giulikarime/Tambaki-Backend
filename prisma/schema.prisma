@@ -164,6 +164,7 @@ model Order {
   id           Int         @id @default(autoincrement())
   total_value  Float       @default(0)
   service_type ServiceType
+  nameClient   String      @db.VarChar(155)
   order_date   DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   menuId       Int?
@@ -271,6 +272,7 @@ enum ProductsCategory {
 }
 
 enum Allergens {
+  Nenhum
   Laticinios
   Glúten
   Oleaginosas
