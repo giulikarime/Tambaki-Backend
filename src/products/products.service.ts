@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
+import { UnitOfMeasure } from '../../generated/prisma/enums';
 
 @Injectable()
 export class ProductsService {
@@ -36,7 +37,24 @@ export class ProductsService {
     }
 
     const product = await this.prisma.product.create({
-      data: dto
+      data: {
+        name: dto.name,
+        cost_price: dto.cost_price,
+        category: dto.category,
+        brand: dto.brand,
+        allergens: dto.allergens ?? [],
+        stock_quantity: dto.stock_quantity,
+        unit_of_measure: dto.unit_of_measure as UnitOfMeasure,
+        min_stock: dto.min_stock,
+        max_stock: dto.max_stock,
+        manufacture_date: new Date(dto.manufacture_date),
+        expiration_date: new Date(dto.expiration_date),
+        storageLocation: dto.storageLocation,
+        status: dto.status,
+        batch: dto.batch,
+        supplierId: dto.supplierId,
+        unitId: dto.unitId,
+      },
     });
 
     return {
@@ -98,12 +116,22 @@ export class ProductsService {
     }
     
     // Separa as datas pra converter e mantém os outros campos do PATCH.
-    const { manufacture_date, expiration_date, ...data } = dto;
+    const {
+      manufacture_date,
+      expiration_date,
+      current_stock: _currentStock,
+      available: _available,
+      unit_of_measure,
+      ...data
+    } = dto;
 
     const updatedProduct = await this.prisma.product.update({
       where: { id },
       data: {
         ...data,
+        ...(unit_of_measure !== undefined && {
+          unit_of_measure: unit_of_measure as UnitOfMeasure,
+        }),
         ...(manufacture_date && { manufacture_date: new Date(manufacture_date) }),
         ...(expiration_date && { expiration_date: new Date(expiration_date) }),
       },
