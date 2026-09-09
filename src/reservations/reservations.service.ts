@@ -13,19 +13,35 @@ function combineDateAndTime(date: Date, time: Date): Date {
 export class ReservationsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private splitDateTime(value: Date) {
+    return {
+      date: new Date(value.getFullYear(), value.getMonth(), value.getDate()),
+      time: value,
+    };
+  }
+
+  private combineDateTime(date: Date, time: Date) {
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      time.getHours(),
+      time.getMinutes(),
+      time.getSeconds(),
+      time.getMilliseconds(),
+    );
+  }
+
   async create(dto: CreateReservationDto) {
     const table = await this.prisma.table.findUnique({ where: { id: dto.tableId } });
     if (!table) {
       throw new NotFoundException('Mesa não encontrada.');
     }
 
-    const startsAtDate = new Date(dto.startsAtDate);
-    const startsAtHours = new Date(dto.startsAtHours);
-    const endsAtDate = new Date(dto.endsAtDate);
-    const endsAtHours = new Date(dto.endsAtHours);
-
-    const startsAt = combineDateAndTime(startsAtDate, startsAtHours);
-    const endsAt = combineDateAndTime(endsAtDate, endsAtHours);
+    const startsAt = new Date(dto.startsAt);
+    const endsAt = new Date(dto.endsAt);
+    const startsAtParts = this.splitDateTime(startsAt);
+    const endsAtParts = this.splitDateTime(endsAt);
 
     if (endsAt <= startsAt) {
       throw new BadRequestException('O horário final precisa ser depois do horário inicial.');
@@ -37,15 +53,19 @@ export class ReservationsService {
       );
     }
 
-    // pré-filtra candidatos pelo intervalo de datas (rápido, feito no banco),
-    // depois confirma a sobreposição exata combinando data+hora no JS
-    const candidates = await this.prisma.reservation.findMany({
-      where: {
-        tableId: dto.tableId,
-        status: { not: 'Cancelada' },
-        startsAtDate: { lte: endsAtDate },
-        endsAtDate: { gte: startsAtDate },
-      },
+    const reservations = await this.prisma.reservation.findMany({
+      where: { tableId: dto.tableId, status: { not: 'Cancelada' } },
+    });
+    const overlapping = reservations.find((reservation) => {
+      const reservationStartsAt = this.combineDateTime(
+        reservation.startsAtDate,
+        reservation.startsAtHours,
+      );
+      const reservationEndsAt = this.combineDateTime(
+        reservation.endsAtDate,
+        reservation.endsAtHours,
+      );
+      return reservationStartsAt < endsAt && reservationEndsAt > startsAt;
     });
 
     const overlapping = candidates.some((r) => {
@@ -63,10 +83,10 @@ export class ReservationsService {
         name: dto.name,
         phone: dto.phone,
         quantityPeople: dto.quantityPeople,
-        startsAtDate,
-        startsAtHours,
-        endsAtDate,
-        endsAtHours,
+        startsAtDate: startsAtParts.date,
+        startsAtHours: startsAtParts.time,
+        endsAtDate: endsAtParts.date,
+        endsAtHours: endsAtParts.time,
         tableId: table.id,
         unitId: table.unitId,
       },
@@ -107,14 +127,14 @@ export class ReservationsService {
       throw new NotFoundException('Mesa não encontrada.');
     }
 
-    const startsAtDate = dto.startsAtDate ? new Date(dto.startsAtDate) : reservation.startsAtDate;
-    const startsAtHours = dto.startsAtHours ? new Date(dto.startsAtHours) : reservation.startsAtHours;
-    const endsAtDate = dto.endsAtDate ? new Date(dto.endsAtDate) : reservation.endsAtDate;
-    const endsAtHours = dto.endsAtHours ? new Date(dto.endsAtHours) : reservation.endsAtHours;
-
-    const startsAt = combineDateAndTime(startsAtDate, startsAtHours);
-    const endsAt = combineDateAndTime(endsAtDate, endsAtHours);
-
+    const startsAt = dto.startsAt
+      ? new Date(dto.startsAt)
+      : this.combineDateTime(reservation.startsAtDate, reservation.startsAtHours);
+    const endsAt = dto.endsAt
+      ? new Date(dto.endsAt)
+      : this.combineDateTime(reservation.endsAtDate, reservation.endsAtHours);
+    const startsAtParts = this.splitDateTime(startsAt);
+    const endsAtParts = this.splitDateTime(endsAt);
     if (endsAt <= startsAt) {
       throw new BadRequestException('O horário final precisa ser depois do horário inicial.');
     }
@@ -126,14 +146,13 @@ export class ReservationsService {
       );
     }
 
-    const candidates = await this.prisma.reservation.findMany({
-      where: {
-        id: { not: id },
-        tableId,
-        status: { not: 'Cancelada' },
-        startsAtDate: { lte: endsAtDate },
-        endsAtDate: { gte: startsAtDate },
-      },
+    const reservations = await this.prisma.reservation.findMany({
+      where: { id: { not: id }, tableId, status: { not: 'Cancelada' } },
+    });
+    const overlapping = reservations.find((item) => {
+      const itemStartsAt = this.combineDateTime(item.startsAtDate, item.startsAtHours);
+      const itemEndsAt = this.combineDateTime(item.endsAtDate, item.endsAtHours);
+      return itemStartsAt < endsAt && itemEndsAt > startsAt;
     });
 
     const overlapping = candidates.some((r) => {
@@ -152,10 +171,10 @@ export class ReservationsService {
         name: dto.name,
         phone: dto.phone,
         quantityPeople,
-        startsAtDate,
-        startsAtHours,
-        endsAtDate,
-        endsAtHours,
+        startsAtDate: startsAtParts.date,
+        startsAtHours: startsAtParts.time,
+        endsAtDate: endsAtParts.date,
+        endsAtHours: endsAtParts.time,
         status: dto.status,
         ...(dto.tableId !== undefined ? { tableId, unitId: table.unitId } : {}),
       },
