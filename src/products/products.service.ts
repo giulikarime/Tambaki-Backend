@@ -1,8 +1,5 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
@@ -89,73 +86,57 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: number, dto: UpdateProductDto) {
-  const product = await this.prisma.product.findUnique({ where: { id } });
-  if (!product) {
-    throw new NotFoundException('Produto não encontrado.');
-  }
-
-  if (dto.name !== undefined && dto.name !== product.name) {
-    const existingProduct = await this.prisma.product.findFirst({
-      where: { name: dto.name },
-    });
-    if (existingProduct) {
-      throw new ConflictException(
-        'Já existe um produto cadastrado com este nome.',
-      );
+    async update(id: number, dto: UpdateProductDto) {
+    const product = await this.prisma.product.findUnique({ where: { id } });
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado.');
     }
-  }
 
-  if (dto.supplierId !== undefined) {
-    const supplier = await this.prisma.supplier.findUnique({
-      where: { id: dto.supplierId },
-    });
-    if (!supplier) {
-      throw new NotFoundException('Fornecedor não encontrado.');
+    if (dto.name !== undefined && dto.name !== product.name) {
+      const existingProduct = await this.prisma.product.findFirst({
+        where: { name: dto.name },
+      });
+      if (existingProduct) {
+        throw new ConflictException(
+          'Já existe um produto cadastrado com este nome.',
+        );
+      }
     }
-    
-    // Separa as datas pra converter e mantém os outros campos do PATCH.
-    const {
-      manufacture_date,
-      expiration_date,
-      current_stock: _currentStock,
-      available: _available,
-      unit_of_measure,
-      ...data
-    } = dto;
+
+    if (dto.supplierId !== undefined) {
+      const supplier = await this.prisma.supplier.findUnique({
+        where: { id: dto.supplierId },
+      });
+      if (!supplier) {
+        throw new NotFoundException('Fornecedor não encontrado.');
+      }
+    }
+
+    if (dto.unitId !== undefined) {
+      const unit = await this.prisma.storeUnit.findUnique({
+        where: { id: dto.unitId },
+      });
+      if (!unit) {
+        throw new NotFoundException('Unidade (loja) não encontrada.');
+      }
+    }
+
+    const { manufacture_date, expiration_date, ...data } = dto;
 
     const updatedProduct = await this.prisma.product.update({
       where: { id },
       data: {
         ...data,
-        ...(unit_of_measure !== undefined && {
-          unit_of_measure: unit_of_measure as UnitOfMeasure,
-        }),
         ...(manufacture_date && { manufacture_date: new Date(manufacture_date) }),
         ...(expiration_date && { expiration_date: new Date(expiration_date) }),
-      },
+      } as Prisma.ProductUncheckedUpdateInput,
     });
-    if (!unit) {
-      throw new NotFoundException('Unidade (loja) não encontrada.');
-    }
+
+    return {
+      message: 'Produto atualizado com sucesso!',
+      product: updatedProduct,
+    };
   }
-
-  const { manufacture_date, expiration_date, ...data } = dto;
-
-  const updatedProduct = await this.prisma.product.update({
-    where: { id },
-    data: {
-      ...data,
-      ...(manufacture_date && { manufacture_date: new Date(manufacture_date) }),
-      ...(expiration_date && { expiration_date: new Date(expiration_date) }),
-    } as Prisma.ProductUncheckedUpdateInput,
-  });
-
-  return {
-    message: 'Produto atualizado com sucesso!',
-    product: updatedProduct,
-  };
-}
 
   async delete(id: number) {
     const product = await this.prisma.product.findUnique({ where: { id } });

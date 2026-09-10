@@ -3,12 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateReservationDto } from './create-reservation.dto';
 import { UpdateReservationDto } from './update-reservation.dto';
 
-function combineDateAndTime(date: Date, time: Date): Date {
-  const combined = new Date(date);
-  combined.setUTCHours(time.getUTCHours(), time.getUTCMinutes(), time.getUTCSeconds(), 0);
-  return combined;
-}
-
 @Injectable()
 export class ReservationsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -38,8 +32,8 @@ export class ReservationsService {
       throw new NotFoundException('Mesa não encontrada.');
     }
 
-    const startsAt = new Date(dto.startsAt);
-    const endsAt = new Date(dto.endsAt);
+    const startsAt = this.combineDateTime(new Date(dto.startsAtDate), new Date(dto.startsAtHours));
+    const endsAt = this.combineDateTime(new Date(dto.endsAtDate), new Date(dto.endsAtHours));
     const startsAtParts = this.splitDateTime(startsAt);
     const endsAtParts = this.splitDateTime(endsAt);
 
@@ -68,11 +62,6 @@ export class ReservationsService {
       return reservationStartsAt < endsAt && reservationEndsAt > startsAt;
     });
 
-    const overlapping = candidates.some((r) => {
-      const rStart = combineDateAndTime(r.startsAtDate, r.startsAtHours);
-      const rEnd = combineDateAndTime(r.endsAtDate, r.endsAtHours);
-      return rStart < endsAt && rEnd > startsAt;
-    });
 
     if (overlapping) {
       throw new BadRequestException('Essa mesa já está reservada nesse período.');
@@ -127,14 +116,17 @@ export class ReservationsService {
       throw new NotFoundException('Mesa não encontrada.');
     }
 
-    const startsAt = dto.startsAt
-      ? new Date(dto.startsAt)
-      : this.combineDateTime(reservation.startsAtDate, reservation.startsAtHours);
-    const endsAt = dto.endsAt
-      ? new Date(dto.endsAt)
-      : this.combineDateTime(reservation.endsAtDate, reservation.endsAtHours);
+    const startsAt = (dto.startsAtDate && dto.startsAtHours)
+  ? this.combineDateTime(new Date(dto.startsAtDate), new Date(dto.startsAtHours))
+  : this.combineDateTime(reservation.startsAtDate, reservation.startsAtHours);
+
+const endsAt = (dto.endsAtDate && dto.endsAtHours)
+  ? this.combineDateTime(new Date(dto.endsAtDate), new Date(dto.endsAtHours))
+  : this.combineDateTime(reservation.endsAtDate, reservation.endsAtHours);
+
     const startsAtParts = this.splitDateTime(startsAt);
     const endsAtParts = this.splitDateTime(endsAt);
+
     if (endsAt <= startsAt) {
       throw new BadRequestException('O horário final precisa ser depois do horário inicial.');
     }
@@ -153,12 +145,6 @@ export class ReservationsService {
       const itemStartsAt = this.combineDateTime(item.startsAtDate, item.startsAtHours);
       const itemEndsAt = this.combineDateTime(item.endsAtDate, item.endsAtHours);
       return itemStartsAt < endsAt && itemEndsAt > startsAt;
-    });
-
-    const overlapping = candidates.some((r) => {
-      const rStart = combineDateAndTime(r.startsAtDate, r.startsAtHours);
-      const rEnd = combineDateAndTime(r.endsAtDate, r.endsAtHours);
-      return rStart < endsAt && rEnd > startsAt;
     });
 
     if (overlapping) {

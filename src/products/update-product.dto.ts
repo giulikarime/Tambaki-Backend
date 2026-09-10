@@ -1,15 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsDateString,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import {IsArray, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Allergens, ProductsCategory, ProductStatus,ProductStorageLocation } from '../../generated/prisma/enums';
 
 export class UpdateProductDto {
@@ -38,13 +27,11 @@ export class UpdateProductDto {
   batch?: string;
 
   @IsOptional()
-  @IsString()
-  @IsEnum(ProductStatus, { each: true, message: 'Status inválido.' })
+  @IsEnum(ProductStatus, { message: 'Status inválido.' })
   status?: ProductStatus[];
 
   @IsOptional()
-  @IsString()
-  @IsEnum(  ProductStorageLocation, { each: true, message: 'Local de Armazenamento inválido.' })
+  @IsEnum(  ProductStorageLocation, { message: 'Local de Armazenamento inválido.' })
   storageLocation?: ProductStorageLocation[];
 
   @IsOptional()
@@ -64,11 +51,6 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsInt()
-  @Min(0, { message: 'O estoque atual não pode ser negativo.' })
-  current_stock?: number;
-
-  @IsOptional()
-  @IsInt()
   @Min(0, { message: 'O estoque mínimo não pode ser negativo.' })
   min_stock?: number;
 
@@ -84,10 +66,6 @@ export class UpdateProductDto {
   @IsOptional()
   @IsDateString({}, { message: 'Data de validade inválida.' })
   expiration_date?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  available?: boolean;
 
   @IsOptional()
   @IsInt()
