@@ -47,10 +47,10 @@ model User {
   email            String            @db.VarChar(255)
   phone            String            @db.VarChar(11)
   password         String            @db.VarChar(60)
-  role             String            @db.VarChar(150)
-  access_level     AccessLevel
-  employ_type      EmployType
-  shift            ShiftType
+  role             String            @db.VarChar(150) //Este aqui Julia!
+  access_level     AccessLevel //Este aqui Julia!
+  employ_type      EmployType //Este aqui Julia!
+  shift            ShiftType //Este aqui Julia!
   hire_date        DateTime?         @db.Date
   weekly_hours     Int?
   salary           Decimal?          @db.Decimal(10, 2)
