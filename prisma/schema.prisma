@@ -51,6 +51,7 @@ model User {
   access_level     AccessLevel //Este aqui Julia!
   employ_type      EmployType //Este aqui Julia!
   shift            ShiftType //Este aqui Julia!
+  //Adicionar opção de documento tbm
   hire_date        DateTime?         @db.Date
   weekly_hours     Int?
   salary           Decimal?          @db.Decimal(10, 2)
