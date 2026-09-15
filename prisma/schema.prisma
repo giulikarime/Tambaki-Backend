@@ -80,6 +80,8 @@ model Supplier {
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
+  category         ProductsCategory
+  url_document     String?             @db.VarChar(255)
   businnes_hours   String
   resposible_name  String             @db.VarChar(255)
   payment_terms    String
