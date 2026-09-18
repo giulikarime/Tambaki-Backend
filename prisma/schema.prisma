@@ -236,7 +236,14 @@ enum OrderStatus {
 }
 
 enum MenuCategory {
-  Prato
+  Prato_Principal
+  Entrada
+  Saída
+  Rodizio
+  LaCarte
+  SelfService
+  Vegetariano
+  Vegano
   Sobremesa
   Bebidas
 }
@@ -268,6 +275,10 @@ enum ProductsCategory {
   Secos
   Bebida_Alcoolica
   Bebida_nao_Alcoolica
+  Panificação
+  Congelados
+  Materiais_Operacionais
+  Descartáveis
 }
 
 enum Allergens {
@@ -275,6 +286,14 @@ enum Allergens {
   Glúten
   Oleaginosas
   Frutos_do_mar
+  Ovos
+  Amendoim
+  Castanhas
+  Soja
+  Trigo
+  Peixes
+  Crustáceos
+  Gergelim
 }
 
 enum UnitOfMeasure {
