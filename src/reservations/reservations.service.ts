@@ -7,17 +7,38 @@ import { UpdateReservationDto } from './update-reservation.dto';
 export class ReservationsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private splitDateTime(value: Date) {
+    return {
+      date: new Date(value.getFullYear(), value.getMonth(), value.getDate()),
+      time: value,
+    };
+  }
+
+  private combineDateTime(date: Date, time: Date) {
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      time.getHours(),
+      time.getMinutes(),
+      time.getSeconds(),
+      time.getMilliseconds(),
+    );
+  }
+
   async create(dto: CreateReservationDto) {
     const table = await this.prisma.table.findUnique({ where: { id: dto.tableId } });
     if (!table) {
       throw new NotFoundException('Mesa não encontrada.');
     }
 
-    const startsAt = new Date(dto.startsAt);
-    const endsAt = new Date(dto.endsAt);
+    const startsAt = this.combineDateTime(new Date(dto.startsAtDate), new Date(dto.startsAtHours));
+    const endsAt = this.combineDateTime(new Date(dto.endsAtDate), new Date(dto.endsAtHours));
+    const startsAtParts = this.splitDateTime(startsAt);
+    const endsAtParts = this.splitDateTime(endsAt);
 
     if (endsAt <= startsAt) {
-      throw new BadRequestException('endsAt precisa ser depois de startsAt.');
+      throw new BadRequestException('O horário final precisa ser depois do horário inicial.');
     }
 
     if (dto.quantityPeople > table.capacity) {
@@ -26,15 +47,21 @@ export class ReservationsService {
       );
     }
 
-    // procura reserva já existente que se sobreponha ao horário pedido, pra essa mesma mesa
-    const overlapping = await this.prisma.reservation.findFirst({
-      where: {
-        tableId: dto.tableId,
-        status: { not: 'Cancelada' },
-        startsAt: { lt: endsAt },
-        endsAt: { gt: startsAt },
-      },
+    const reservations = await this.prisma.reservation.findMany({
+      where: { tableId: dto.tableId, status: { not: 'Cancelada' } },
     });
+    const overlapping = reservations.find((reservation) => {
+      const reservationStartsAt = this.combineDateTime(
+        reservation.startsAtDate,
+        reservation.startsAtHours,
+      );
+      const reservationEndsAt = this.combineDateTime(
+        reservation.endsAtDate,
+        reservation.endsAtHours,
+      );
+      return reservationStartsAt < endsAt && reservationEndsAt > startsAt;
+    });
+
 
     if (overlapping) {
       throw new BadRequestException('Essa mesa já está reservada nesse período.');
@@ -45,8 +72,10 @@ export class ReservationsService {
         name: dto.name,
         phone: dto.phone,
         quantityPeople: dto.quantityPeople,
-        startsAt,
-        endsAt,
+        startsAtDate: startsAtParts.date,
+        startsAtHours: startsAtParts.time,
+        endsAtDate: endsAtParts.date,
+        endsAtHours: endsAtParts.time,
         tableId: table.id,
         unitId: table.unitId,
       },
@@ -58,7 +87,7 @@ export class ReservationsService {
   async findAll() {
     return this.prisma.reservation.findMany({
       include: { table: true },
-      orderBy: { startsAt: 'asc' },
+      orderBy: [{ startsAtDate: 'asc' }, { startsAtHours: 'asc' }],
     });
   }
 
@@ -87,10 +116,19 @@ export class ReservationsService {
       throw new NotFoundException('Mesa não encontrada.');
     }
 
-    const startsAt = dto.startsAt ? new Date(dto.startsAt) : reservation.startsAt;
-    const endsAt = dto.endsAt ? new Date(dto.endsAt) : reservation.endsAt;
+    const startsAt = (dto.startsAtDate && dto.startsAtHours)
+  ? this.combineDateTime(new Date(dto.startsAtDate), new Date(dto.startsAtHours))
+  : this.combineDateTime(reservation.startsAtDate, reservation.startsAtHours);
+
+const endsAt = (dto.endsAtDate && dto.endsAtHours)
+  ? this.combineDateTime(new Date(dto.endsAtDate), new Date(dto.endsAtHours))
+  : this.combineDateTime(reservation.endsAtDate, reservation.endsAtHours);
+
+    const startsAtParts = this.splitDateTime(startsAt);
+    const endsAtParts = this.splitDateTime(endsAt);
+
     if (endsAt <= startsAt) {
-      throw new BadRequestException('endsAt precisa ser depois de startsAt.');
+      throw new BadRequestException('O horário final precisa ser depois do horário inicial.');
     }
 
     const quantityPeople = dto.quantityPeople ?? reservation.quantityPeople;
@@ -100,15 +138,15 @@ export class ReservationsService {
       );
     }
 
-    const overlapping = await this.prisma.reservation.findFirst({
-      where: {
-        id: { not: id },
-        tableId,
-        status: { not: 'Cancelada' },
-        startsAt: { lt: endsAt },
-        endsAt: { gt: startsAt },
-      },
+    const reservations = await this.prisma.reservation.findMany({
+      where: { id: { not: id }, tableId, status: { not: 'Cancelada' } },
     });
+    const overlapping = reservations.find((item) => {
+      const itemStartsAt = this.combineDateTime(item.startsAtDate, item.startsAtHours);
+      const itemEndsAt = this.combineDateTime(item.endsAtDate, item.endsAtHours);
+      return itemStartsAt < endsAt && itemEndsAt > startsAt;
+    });
+
     if (overlapping) {
       throw new BadRequestException('Essa mesa já está reservada nesse período.');
     }
@@ -119,8 +157,10 @@ export class ReservationsService {
         name: dto.name,
         phone: dto.phone,
         quantityPeople,
-        startsAt,
-        endsAt,
+        startsAtDate: startsAtParts.date,
+        startsAtHours: startsAtParts.time,
+        endsAtDate: endsAtParts.date,
+        endsAtHours: endsAtParts.time,
         status: dto.status,
         ...(dto.tableId !== undefined ? { tableId, unitId: table.unitId } : {}),
       },

@@ -16,6 +16,7 @@ export class OrdersService {
 
     const order = await this.prisma.order.create({
       data: {
+        nameClient: dto.nameClient,
         tableId: table.id,
         unitId: table.unitId,
         service_type: dto.service_type,

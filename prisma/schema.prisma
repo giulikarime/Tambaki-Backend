@@ -67,7 +67,6 @@ model EmployeDocument {
   id           Int       @id @default(autoincrement())
   documentType String
   file_Url     String
-  issuedAt     DateTime  @db.Date
   valid_until  DateTime? @db.Date
   userId       Int
   user         User      @relation(fields: [userId], references: [id])
@@ -81,6 +80,8 @@ model Supplier {
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
+  category         ProductsCategory
+  url_document     String?             @db.VarChar(255)
   businnes_hours   String
   resposible_name  String             @db.VarChar(255)
   payment_terms    String
@@ -105,9 +106,10 @@ model Product {
   cost_price       Float
   category         ProductsCategory
   brand            String                 @db.VarChar(150)
-  allergens        Allergens[]
+  allergens        Allergens
   stock_quantity   Int
   unit_of_measure  UnitOfMeasure
+  document_url     String                 @db.VarChar(255)
   min_stock        Int
   max_stock        Int
   manufacture_date DateTime               @db.Date
@@ -164,6 +166,7 @@ model Order {
   id           Int         @id @default(autoincrement())
   total_value  Float       @default(0)
   service_type ServiceType
+  nameClient   String      @db.VarChar(155)
   order_date   DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   menuId       Int?
@@ -282,6 +285,7 @@ enum ProductsCategory {
 }
 
 enum Allergens {
+  Nenhum
   Laticinios
   Glúten
   Oleaginosas

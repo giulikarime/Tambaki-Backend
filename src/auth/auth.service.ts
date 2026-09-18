@@ -46,7 +46,10 @@ export class AuthService {
     const { email, password } = loginDto;
 
     // 1. Tenta autenticar como User (funcionário vinculado a uma unidade)
-    const user = await this.prisma.user.findFirst({ where: { email } });
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+      include: { storeUnit: true },
+    });
     if (user) {
       return this.authenticateUser(user, password);
     }

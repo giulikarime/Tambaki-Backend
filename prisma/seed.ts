@@ -5,6 +5,7 @@ import {
   AccessLevel,
   EmployType,
   PrismaClient,
+  ProductsCategory,
   ReservationStatus,
   ShiftType,
   TableStatus
@@ -16,7 +17,9 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
- await prisma.reservation.deleteMany();
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.reservation.deleteMany();
   await prisma.table.deleteMany();
   await prisma.user.deleteMany();
   await prisma.supplier.deleteMany();
@@ -142,6 +145,7 @@ async function main() {
         phone: '11988887777',
         email: 'contato@peixenobre.com',
         adress: 'Av. Amazonas, 500',
+        category: ProductsCategory.Embutidos,
         businnes_hours: '08:00 às 18:00',
         resposible_name: 'Roberto Santos',
         payment_terms: '30 dias',
@@ -154,6 +158,7 @@ async function main() {
         phone: '11987654321',
         email: 'pedidos@mercadosantaluzia.com.br',
         adress: 'Ceagesp - Av. Dr. Gastão Vidigal, 1946, Pavilhão M-10, Vila Leopoldina - São Paulo / SP',
+        category: ProductsCategory.Carnes_e_Pescados,
         businnes_hours: 'Seg-Sáb: 04:00 às 14:00',
         resposible_name: 'Michael Jaylison',
         payment_terms: 'Semanal / 7 dias',
@@ -166,6 +171,7 @@ async function main() {
         phone: '1133445566',
         email: 'vendas@valedosolbebidas.com.br',
         adress: 'Av. Imperatriz Leopoldina, 800, Vila Leopoldina - São Paulo / SP',
+        category: ProductsCategory.Laticínios_e_Frios,
         businnes_hours: 'Seg-Sex: 07:00 às 17:00',
         resposible_name: 'Stefanni Germanota',
         payment_terms: '14/28 dias',

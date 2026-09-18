@@ -1,11 +1,9 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
+import { UnitOfMeasure } from '../../generated/prisma/enums';
 
 @Injectable()
 export class ProductsService {
@@ -19,6 +17,15 @@ export class ProductsService {
       throw new ConflictException(
         'Já existe um produto cadastrado com este nome.',
       );
+    }
+
+    const existingBatch = await this.prisma.product.findFirst({
+      where:{batch : dto.batch},
+    });
+    if(existingBatch){
+      throw new ConflictException(
+        "Já existe um lote cadastrado com esse valor.",
+      )
     }
 
     const supplier = await this.prisma.supplier.findUnique({
@@ -36,7 +43,24 @@ export class ProductsService {
     }
 
     const product = await this.prisma.product.create({
-      data: dto
+      data: {
+        name: dto.name,
+        cost_price: dto.cost_price,
+        category: dto.category,
+        brand: dto.brand,
+        allergens: dto.allergens ?? [],
+        stock_quantity: dto.stock_quantity,
+        unit_of_measure: dto.unit_of_measure as UnitOfMeasure,
+        min_stock: dto.min_stock,
+        max_stock: dto.max_stock,
+        manufacture_date: new Date(dto.manufacture_date),
+        expiration_date: new Date(dto.expiration_date),
+        storageLocation: dto.storageLocation,
+        status: dto.status,
+        batch: dto.batch,
+        supplierId: dto.supplierId,
+        unitId: dto.unitId,
+      },
     });
 
     return {
@@ -62,7 +86,7 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: number, dto: UpdateProductDto) {
+    async update(id: number, dto: UpdateProductDto) {
     const product = await this.prisma.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException('Produto não encontrado.');
@@ -96,8 +120,7 @@ export class ProductsService {
         throw new NotFoundException('Unidade (loja) não encontrada.');
       }
     }
-    
-    // Separa as datas pra converter e mantém os outros campos do PATCH.
+
     const { manufacture_date, expiration_date, ...data } = dto;
 
     const updatedProduct = await this.prisma.product.update({
@@ -106,7 +129,7 @@ export class ProductsService {
         ...data,
         ...(manufacture_date && { manufacture_date: new Date(manufacture_date) }),
         ...(expiration_date && { expiration_date: new Date(expiration_date) }),
-      },
+      } as Prisma.ProductUncheckedUpdateInput,
     });
 
     return {
