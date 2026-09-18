@@ -1,4 +1,5 @@
-import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ProductsCategory } from '../../generated/prisma/enums';
 
 export class UpdateSupplierDto {
   @IsOptional()
@@ -28,6 +29,14 @@ export class UpdateSupplierDto {
   @IsString()
   @IsNotEmpty({ message: 'O endereço não pode ser vazio.' })
   adress?: string;
+
+  @IsOptional()
+  @IsEnum(ProductsCategory, { message: 'Categoria de produto inválida.' })
+  category?: ProductsCategory;
+
+  @IsOptional()
+  @IsString()
+  url_document?: string;
 
   @IsOptional()
   @IsString()

@@ -1,5 +1,4 @@
 import {
-  IsArray,
   IsBoolean,
   IsDateString,
   IsEnum,
@@ -28,10 +27,12 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'A marca é obrigatória.' })
   brand!: string;
 
-  @IsArray()
-  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
-  @IsOptional()
-  allergens?: Allergens[];
+  @IsEnum(Allergens, { message: 'Alérgeno inválido.' })
+  allergens!: Allergens;
+
+  @IsString()
+  @IsNotEmpty({ message: 'A URL do documento é obrigatória.' })
+  document_url!: string;
 
   @IsInt()
   @Min(0, { message: 'A quantidade em estoque não pode ser negativa.' })

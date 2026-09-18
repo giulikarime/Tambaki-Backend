@@ -1,4 +1,4 @@
-import {IsArray, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Allergens, ProductsCategory, ProductStatus,ProductStorageLocation } from '../../generated/prisma/enums';
 
 export class UpdateProductDto {
@@ -35,9 +35,13 @@ export class UpdateProductDto {
   storageLocation?: ProductStorageLocation[];
 
   @IsOptional()
-  @IsArray()
-  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
-  allergens?: Allergens[];
+  @IsEnum(Allergens, { message: 'Alérgeno inválido.' })
+  allergens?: Allergens;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'A URL do documento não pode ser vazia.' })
+  document_url?: string;
 
   @IsOptional()
   @IsInt()
