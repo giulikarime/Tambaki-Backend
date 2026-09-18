@@ -145,7 +145,7 @@ async function main() {
         phone: '11988887777',
         email: 'contato@peixenobre.com',
         adress: 'Av. Amazonas, 500',
-        category: ProductsCategory.Embutidos,
+        category: ProductsCategory.Carnes_e_Pescados,
         businnes_hours: '08:00 às 18:00',
         resposible_name: 'Roberto Santos',
         payment_terms: '30 dias',

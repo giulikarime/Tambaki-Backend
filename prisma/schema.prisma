@@ -81,7 +81,7 @@ model Supplier {
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
   category         ProductsCategory
-  url_document     String?             @db.VarChar(255)
+  url_document     String?            @db.VarChar(255)
   businnes_hours   String
   resposible_name  String             @db.VarChar(255)
   payment_terms    String
@@ -132,6 +132,7 @@ model Menu {
   description String       @db.VarChar(255)
   category    MenuCategory
   price       Float
+  img         String       @db.VarChar(255)
   available   Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
