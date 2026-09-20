@@ -106,7 +106,7 @@ model Product {
   cost_price       Float
   category         ProductsCategory
   brand            String                 @db.VarChar(150)
-  allergens        Allergens
+  allergens        Allergens[]
   stock_quantity   Int
   unit_of_measure  UnitOfMeasure
   document_url     String                 @db.VarChar(255)
@@ -124,6 +124,7 @@ model Product {
   notification     Notification[]
   supplier         Supplier               @relation(fields: [supplierId], references: [id])
   unit             StoreUnit              @relation(fields: [unitId], references: [id])
+  
 }
 
 model Menu {
@@ -132,7 +133,7 @@ model Menu {
   description String       @db.VarChar(255)
   category    MenuCategory
   price       Float
-  img         String       @db.VarChar(255)
+  img         String?
   available   Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -286,7 +287,6 @@ enum ProductsCategory {
 }
 
 enum Allergens {
-  Nenhum
   Laticinios
   Glúten
   Oleaginosas

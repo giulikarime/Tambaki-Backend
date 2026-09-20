@@ -21,6 +21,7 @@ API REST do sistema Tambaki, uma aplicação de gerenciamento de restaurantes de
 
 ```bash
 npm install
+npm install -D @types/multer
 ```
 
 Configure as variáveis de ambiente no arquivo `.env` e execute as migrações e o seed:

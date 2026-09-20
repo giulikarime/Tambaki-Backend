@@ -1,5 +1,5 @@
 import { Prisma } from '../../generated/prisma/client';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException , BadRequestException} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
@@ -10,15 +10,6 @@ export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateProductDto) {
-    const existingProduct = await this.prisma.product.findFirst({
-      where: { name: dto.name },
-    });
-    if (existingProduct) {
-      throw new ConflictException(
-        'Já existe um produto cadastrado com este nome.',
-      );
-    }
-
     const existingBatch = await this.prisma.product.findFirst({
       where:{batch : dto.batch},
     });
@@ -149,4 +140,30 @@ export class ProductsService {
 
     return { message: 'Produto excluído com sucesso!' };
   }
+
+  // products.service.ts
+  async writeOff(id: number, quantity: number) {
+    const product = await this.prisma.product.findUnique({ where: { id } });
+    if (!product) throw new NotFoundException('Produto não encontrado.');
+
+    if (!quantity || isNaN(quantity)) {
+      throw new BadRequestException('Quantidade inválida.');
+    }
+    if (quantity <= 0) {
+      throw new BadRequestException('A quantidade de baixa deve ser maior que zero.');
+    }
+    if (quantity > product.stock_quantity) {
+      throw new BadRequestException('Quantidade de baixa maior que o estoque disponível.');
+    }
+
+    const updated = await this.prisma.product.update({
+      where: { id },
+      data: {
+        stock_quantity: { decrement: quantity },
+      },
+    });
+
+    return { message: 'Baixa realizada com sucesso!', product: updated };
+  }
+
 }

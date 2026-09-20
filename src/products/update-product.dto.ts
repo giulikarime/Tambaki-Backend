@@ -35,8 +35,8 @@ export class UpdateProductDto {
   storageLocation?: ProductStorageLocation[];
 
   @IsOptional()
-  @IsEnum(Allergens, { message: 'Alérgeno inválido.' })
-  allergens?: Allergens;
+  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.'  })
+  allergens?: Allergens[];
 
   @IsOptional()
   @IsString()

@@ -27,9 +27,10 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'A marca é obrigatória.' })
   brand!: string;
 
-  @IsEnum(Allergens, { message: 'Alérgeno inválido.' })
-  allergens!: Allergens;
+  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
+  allergens!: Allergens[];
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty({ message: 'A URL do documento é obrigatória.' })
   document_url!: string;
@@ -64,7 +65,6 @@ export class CreateProductDto {
 
   @IsEnum(ProductStatus, { message: 'Status inválido. Use "Ativo", "Inativo" ou "Descontinuado".' })
   status!: ProductStatus;
-
 
   @IsString()
   @IsNotEmpty({ message: 'O campo de lote é obrigatório.' })
