@@ -49,6 +49,16 @@ export class UpdateProductDto {
   stock_quantity?: number;
 
   @IsOptional()
+  @IsInt()
+  @Min(0, { message: 'A quantidade do pacote não pode ser negativa.' })
+  unit_of_product?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'A unidade de medida é obrigatório.' })
+  measure_unit_of_product?: string;
+
+  @IsOptional()
   @IsString()
   @IsNotEmpty({ message: 'A unidade de medida não pode ser vazia.' })
   unit_of_measure?: string;

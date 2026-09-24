@@ -108,6 +108,8 @@ model Product {
   brand            String                 @db.VarChar(150)
   allergens        Allergens[]
   stock_quantity   Int
+  unit_of_product  Int
+  measure_unit_of_product UnitOfMeasure
   unit_of_measure  UnitOfMeasure
   document_url     String                 @db.VarChar(255)
   min_stock        Int

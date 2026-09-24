@@ -42,6 +42,8 @@ export class ProductsService {
         allergens: dto.allergens,
         document_url: dto.document_url,
         stock_quantity: dto.stock_quantity,
+        unit_of_product: dto.unit_of_product,
+        measure_unit_of_product: dto.measure_unit_of_product,
         unit_of_measure: dto.unit_of_measure as UnitOfMeasure,
         min_stock: dto.min_stock,
         max_stock: dto.max_stock,
@@ -82,17 +84,6 @@ export class ProductsService {
     const product = await this.prisma.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException('Produto não encontrado.');
-    }
-
-    if (dto.name !== undefined && dto.name !== product.name) {
-      const existingProduct = await this.prisma.product.findFirst({
-        where: { name: dto.name },
-      });
-      if (existingProduct) {
-        throw new ConflictException(
-          'Já existe um produto cadastrado com este nome.',
-        );
-      }
     }
 
     if (dto.supplierId !== undefined) {

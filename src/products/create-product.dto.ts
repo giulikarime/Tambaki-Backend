@@ -39,6 +39,13 @@ export class CreateProductDto {
   @Min(0, { message: 'A quantidade em estoque não pode ser negativa.' })
   stock_quantity!: number;
 
+  @IsInt()
+  @Min(0, { message: 'A quantidade do pacote não pode ser negativa.' })
+  unit_of_product!: number;
+
+  @IsEnum(UnitOfMeasure, { message: 'A unidade de medida é obrigatória.' })
+  measure_unit_of_product!: UnitOfMeasure;
+
   @IsEnum(UnitOfMeasure,{ message: 'A unidade de medida é obrigatória.' })
   unit_of_measure!: UnitOfMeasure;
 
