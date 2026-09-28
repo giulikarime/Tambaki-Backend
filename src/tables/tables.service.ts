@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTableDto } from './create-table.dto';
 import { UpdateTableDto } from './update-table.dto';
@@ -63,6 +63,14 @@ export class TablesService {
     const table = await this.prisma.table.findUnique({ where: { id } });
     if (!table) {
       throw new NotFoundException('Mesa não encontrada.');
+    }
+
+    const reservation = await this.prisma.reservation.findFirst({
+      where: { tableId: id },
+    });
+
+    if (reservation) {
+      throw new BadRequestException('Não é possível excluir uma mesa com reservas vinculadas.');
     }
 
     await this.prisma.table.delete({ where: { id } });
