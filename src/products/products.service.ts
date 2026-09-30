@@ -4,10 +4,63 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
 import { UnitOfMeasure } from '../../generated/prisma/enums';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
+
+  private async checkProductAlerts(product: {
+    id: number;
+    name: string;
+    stock_quantity: number;
+    min_stock: number;
+    expiration_date: Date | string;
+  }) {
+    const today = new Date();
+    const expirationDate = new Date(product.expiration_date);
+    const daysLeft = Math.ceil(
+      (expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (expirationDate < today) {
+      await this.notificationsService.createIfNeeded({
+        message: `Produto ${product.name} está vencido.`,
+        produtoID: product.id,
+        read: false,
+      });
+      return;
+    }
+
+    if (daysLeft <= 7) {
+      await this.notificationsService.createIfNeeded({
+        message: `Produto ${product.name} está quase vencendo. Faltam ${daysLeft} dia(s) para vencer.`,
+        produtoID: product.id,
+        read: false,
+      });
+      return;
+    }
+
+    if (product.stock_quantity === 0) {
+      await this.notificationsService.createIfNeeded({
+        message: `Produto ${product.name} acabou no estoque.`,
+        produtoID: product.id,
+        read: false,
+      });
+      return;
+    }
+
+    if (product.stock_quantity <= product.min_stock) {
+      await this.notificationsService.createIfNeeded({
+        message: `Produto ${product.name} está acabando. Restam ${product.stock_quantity} unidade(s).`,
+        produtoID: product.id,
+        read: false,
+      });
+    }
+  }
 
   async create(dto: CreateProductDto) {
     const existingBatch = await this.prisma.product.findFirst({
@@ -56,6 +109,8 @@ export class ProductsService {
         unitId: dto.unitId,
       },
     });
+
+    await this.checkProductAlerts(product);
 
     return {
       message: 'Produto cadastrado com sucesso!',
@@ -115,6 +170,8 @@ export class ProductsService {
       } as Prisma.ProductUncheckedUpdateInput,
     });
 
+    await this.checkProductAlerts(updatedProduct);
+
     return {
       message: 'Produto atualizado com sucesso!',
       product: updatedProduct,
@@ -153,6 +210,8 @@ export class ProductsService {
         stock_quantity: { decrement: quantity },
       },
     });
+
+    await this.checkProductAlerts(updated);
 
     return { message: 'Baixa realizada com sucesso!', product: updated };
   }
