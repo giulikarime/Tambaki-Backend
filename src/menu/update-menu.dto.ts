@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { MenuCategory } from '../../generated/prisma/client';
 
 export class UpdateMenuDto {
@@ -22,4 +22,9 @@ export class UpdateMenuDto {
   @IsOptional()
   @IsBoolean()
   available?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  img?: string[];
 }
