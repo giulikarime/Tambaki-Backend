@@ -1,5 +1,5 @@
 import { Prisma } from '../../generated/prisma/client';
-import { ConflictException, Injectable, NotFoundException , BadRequestException} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './create-product.dto';
 import { UpdateProductDto } from './update-product.dto';
@@ -11,11 +11,9 @@ export class ProductsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
-  ) {}
+  ) { }
 
-  private async checkProductAlerts(product: {
-    id: number;
-    name: string;
+  private getProductAlertState(product: {
     stock_quantity: number;
     min_stock: number;
     expiration_date: Date | string;
@@ -26,36 +24,74 @@ export class ProductsService {
       (expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    if (expirationDate < today) {
-      await this.notificationsService.createIfNeeded({
-        message: `Produto ${product.name} está vencido.`,
-        produtoID: product.id,
-        read: false,
-      });
-      return;
-    }
+    const isExpired = expirationDate < today;
+    const isExpiringSoon = expirationDate >= today && daysLeft <= 7;
+    const isOutOfStock = product.stock_quantity === 0;
+    const isLowStock = product.stock_quantity > 0 && product.stock_quantity <= product.min_stock;
 
-    if (daysLeft <= 7) {
-      await this.notificationsService.createIfNeeded({
-        message: `Produto ${product.name} está quase vencendo. Faltam ${daysLeft} dia(s) para vencer.`,
-        produtoID: product.id,
-        read: false,
-      });
-      return;
-    }
+    const alerts: string[] = [];
 
-    if (product.stock_quantity === 0) {
-      await this.notificationsService.createIfNeeded({
-        message: `Produto ${product.name} acabou no estoque.`,
-        produtoID: product.id,
-        read: false,
-      });
-      return;
-    }
+    if (isExpired) alerts.push('vencido');
+    if (isExpiringSoon) alerts.push('quase_vencendo');
+    if (isOutOfStock) alerts.push('acabado');
+    if (isLowStock) alerts.push('quase_acabando');
 
-    if (product.stock_quantity <= product.min_stock) {
+    return {
+      alerts,
+    };
+  }
+
+  private addProductAlerts<T extends {
+    id: number;
+    name: string;
+    stock_quantity: number;
+    min_stock: number;
+    expiration_date: Date | string;
+  }>(product: T) {
+    const { alerts } = this.getProductAlertState(product);
+
+    return {
+      ...product,
+      alerts,
+    };
+  }
+
+  private async checkAndNotifyProductAlerts(product: {
+    id: number;
+    name: string;
+    stock_quantity: number;
+    min_stock: number;
+    expiration_date: Date | string;
+  }) {
+    const { alerts } = this.getProductAlertState(product);
+    const today = new Date();
+    const expirationDate = new Date(product.expiration_date);
+    const daysLeft = Math.ceil((expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    const isExpired = expirationDate < today;
+    const isExpiringSoon = expirationDate >= today && daysLeft <= 7;
+    const isOutOfStock = product.stock_quantity === 0;
+    const isLowStock = product.stock_quantity > 0 && product.stock_quantity <= product.min_stock;
+
+    const messages: Record<string, string> = {
+      vencido: `Produto ${product.name} está vencido.`,
+      quase_vencendo: `Produto ${product.name} está quase vencendo. Faltam ${daysLeft} dia(s) para vencer.`,
+      acabado: `Produto ${product.name} acabou no estoque.`,
+      quase_acabando: `Produto ${product.name} está acabando. Restam ${product.stock_quantity} unidade(s).`,
+    };
+
+    const notificationRules = [
+      { key: 'vencido', active: isExpired },
+      { key: 'quase_vencendo', active: isExpiringSoon },
+      { key: 'acabado', active: isOutOfStock },
+      { key: 'quase_acabando', active: isLowStock },
+    ];
+
+    for (const rule of notificationRules) {
+      if (!rule.active || !alerts.includes(rule.key)) continue;
+
       await this.notificationsService.createIfNeeded({
-        message: `Produto ${product.name} está acabando. Restam ${product.stock_quantity} unidade(s).`,
+        message: messages[rule.key],
         produtoID: product.id,
         read: false,
       });
@@ -64,9 +100,9 @@ export class ProductsService {
 
   async create(dto: CreateProductDto) {
     const existingBatch = await this.prisma.product.findFirst({
-      where:{batch : dto.batch},
+      where: { batch: dto.batch },
     });
-    if(existingBatch){
+    if (existingBatch) {
       throw new ConflictException(
         "Já existe um lote cadastrado com esse valor.",
       )
@@ -110,18 +146,20 @@ export class ProductsService {
       },
     });
 
-    await this.checkProductAlerts(product);
+    await this.checkAndNotifyProductAlerts(product);
 
     return {
       message: 'Produto cadastrado com sucesso!',
-      product,
+      product: this.addProductAlerts(product),
     };
   }
 
   async findAll() {
-    return this.prisma.product.findMany({
+    const products = await this.prisma.product.findMany({
       include: { supplier: true, unit: true },
     });
+
+    return products.map((product) => this.addProductAlerts(product));
   }
 
   async findOne(id: number) {
@@ -132,10 +170,10 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException('Produto não encontrado.');
     }
-    return product;
+    return this.addProductAlerts(product);
   }
 
-    async update(id: number, dto: UpdateProductDto) {
+  async update(id: number, dto: UpdateProductDto) {
     const product = await this.prisma.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException('Produto não encontrado.');
@@ -170,11 +208,11 @@ export class ProductsService {
       } as Prisma.ProductUncheckedUpdateInput,
     });
 
-    await this.checkProductAlerts(updatedProduct);
+    await this.checkAndNotifyProductAlerts(updatedProduct);
 
     return {
       message: 'Produto atualizado com sucesso!',
-      product: updatedProduct,
+      product: this.addProductAlerts(updatedProduct),
     };
   }
 
@@ -211,9 +249,12 @@ export class ProductsService {
       },
     });
 
-    await this.checkProductAlerts(updated);
+    await this.checkAndNotifyProductAlerts(updated);
 
-    return { message: 'Baixa realizada com sucesso!', product: updated };
+    return {
+      message: 'Baixa realizada com sucesso!',
+      product: this.addProductAlerts(updated),
+    };
   }
 
 }
