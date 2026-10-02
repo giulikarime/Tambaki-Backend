@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { MenuModule } from './menu/menu.module';
+import { UnitModule } from './unit/unit.module';
 import { UploadsModule } from './uploads/upload.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { UploadsModule } from './uploads/upload.module';
     ProductsModule,
     SuppliersModule,
     MenuModule,
+    UnitModule,
     UploadsModule
   ],
   controllers: [AppController],
