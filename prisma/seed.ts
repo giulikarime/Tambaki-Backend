@@ -21,7 +21,12 @@ async function main() {
   await prisma.order.deleteMany();
   await prisma.reservation.deleteMany();
   await prisma.table.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.supplierProducts.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.menu.deleteMany();
+  await prisma.tag.deleteMany();
   await prisma.supplier.deleteMany();
   await prisma.storeUnit.deleteMany();
 
