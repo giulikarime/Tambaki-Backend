@@ -224,6 +224,34 @@ model Reservation {
   @@index([unitId, endsAtDate, endsAtHours])
 }
 
+model Cost{
+  id   Int  @id @default(autoincrement())
+  name String  @db.VarChar(255)
+  costCategory costCategory
+  costType  costType
+  date  DateTime @db.Date
+}
+
+enum costCategory {
+Aluguel
+Salários_Equipe
+Pró_Labore_Sócios
+Contas_Consumo
+Sistema_PDV_ERP
+Contador
+Insumos_Ingredientes
+Impostos_Vendas
+Taxas_Maquininhas_Cartão
+Comissões_Apps_Delivery
+Embalagens
+}
+
+enum costType {
+  fixo
+  variavel
+}
+
+
 enum AccessLevel {
   Master
   Senior

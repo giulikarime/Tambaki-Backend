@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPip
 import { UsersService } from './users.service';
 import { RegisterUserDto } from './register-user.dto';
 import { UpdateUserDto } from './update-user.dto';
+import { AccessLevel, EmployType, ShiftType } from '../../generated/prisma/enums';
 
 @Controller('users')
 export class UsersController {
@@ -10,6 +11,15 @@ export class UsersController {
 	@Get()
 	async findAll() {
 		return this.usersService.findAll();
+	}
+
+	@Get('enums')
+	async getEnums() {
+		return {
+			access_level: Object.values(AccessLevel),
+			employ_type: Object.values(EmployType),
+			shift: Object.values(ShiftType),
+		};
 	}
 
 	@Post()
