@@ -22,6 +22,11 @@ export class CreateMenuDto {
   @IsBoolean()
   available?: boolean;
 
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  img?: string[];
+
   @IsInt()
   @IsNotEmpty()
   unitId!: number;
