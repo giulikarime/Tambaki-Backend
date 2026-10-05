@@ -13,6 +13,7 @@ import { SuppliersModule } from './suppliers/suppliers.module';
 import { MenuModule } from './menu/menu.module';
 import { UnitModule } from './unit/unit.module';
 import { UploadsModule } from './uploads/upload.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { UploadsModule } from './uploads/upload.module';
     ProductsModule,
     SuppliersModule,
     MenuModule,
+    UploadsModule,
+    NotificationsModule,
     UnitModule,
     UploadsModule
   ],
