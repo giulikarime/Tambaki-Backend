@@ -29,7 +29,7 @@ export class UploadsController {
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     return {
-      url: `http://localhost:3000/uploads/${file.filename}`,
+      url: `uploads/${file.filename}`,
     };
   }
 
@@ -42,7 +42,7 @@ export class UploadsController {
   )
   uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
     return {
-      urls: files.map((file) => `http://localhost:3000/uploads/${file.filename}`),
+      urls: files.map((file) => `uploads/${file.filename}`),
     };
   }
 
@@ -55,7 +55,7 @@ export class UploadsController {
   )
   uploadImages(@UploadedFiles() files: Array<Express.Multer.File>) {
     return {
-      urls: files.map((file) => `http://localhost:3000/uploads/${file.filename}`),
+      urls: files.map((file) => `uploads/${file.filename}`),
     };
   }
 }
