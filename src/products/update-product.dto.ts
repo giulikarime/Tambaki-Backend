@@ -1,15 +1,4 @@
-import {
-  IsArray,
-  IsBoolean,
-  IsDateString,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import {IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Allergens, ProductsCategory, ProductStatus,ProductStorageLocation } from '../../generated/prisma/enums';
 
 export class UpdateProductDto {
@@ -38,19 +27,21 @@ export class UpdateProductDto {
   batch?: string;
 
   @IsOptional()
-  @IsString()
-  @IsEnum(ProductStatus, { each: true, message: 'Status inválido.' })
+  @IsEnum(ProductStatus, { message: 'Status inválido.' })
   status?: ProductStatus[];
 
   @IsOptional()
-  @IsString()
-  @IsEnum(  ProductStorageLocation, { each: true, message: 'Local de Armazenamento inválido.' })
+  @IsEnum(  ProductStorageLocation, { message: 'Local de Armazenamento inválido.' })
   storageLocation?: ProductStorageLocation[];
 
   @IsOptional()
-  @IsArray()
-  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
+  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.'  })
   allergens?: Allergens[];
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'A URL do documento não pode ser vazia.' })
+  document_url?: string;
 
   @IsOptional()
   @IsInt()
@@ -58,14 +49,19 @@ export class UpdateProductDto {
   stock_quantity?: number;
 
   @IsOptional()
+  @IsInt()
+  @Min(0, { message: 'A quantidade do pacote não pode ser negativa.' })
+  unit_of_product?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'A unidade de medida é obrigatório.' })
+  measure_unit_of_product?: string;
+
+  @IsOptional()
   @IsString()
   @IsNotEmpty({ message: 'A unidade de medida não pode ser vazia.' })
   unit_of_measure?: string;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0, { message: 'O estoque atual não pode ser negativo.' })
-  current_stock?: number;
 
   @IsOptional()
   @IsInt()
@@ -84,10 +80,6 @@ export class UpdateProductDto {
   @IsOptional()
   @IsDateString({}, { message: 'Data de validade inválida.' })
   expiration_date?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  available?: boolean;
 
   @IsOptional()
   @IsInt()

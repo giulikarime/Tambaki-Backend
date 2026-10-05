@@ -1,22 +1,20 @@
-import {
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsNumber,
-} from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsNumber, IsString} from 'class-validator';
 import { ServiceType, OrderStatus } from '../../generated/prisma/client';
 
 export class CreateOrderDto {
+  @IsString()
+  @IsNotEmpty()
+  nameClient!: string;
+
   @IsInt()
   @IsNotEmpty()
   tableId!: number;
 
-  @IsEnum(ServiceType, { message: 'service_type inválido. Use: Mesa ou Balcao.' })
+  @IsEnum(ServiceType)
   service_type!: ServiceType;
 
   @IsOptional()
-  @IsEnum(OrderStatus, { message: 'status inválido. Use: Aberta, Fechada ou Paga.' })
+  @IsEnum(OrderStatus)
   status?: OrderStatus;
 
   @IsOptional()

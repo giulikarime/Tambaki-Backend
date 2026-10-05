@@ -59,4 +59,9 @@ export class ProductsController {
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.delete(id);
   }
+
+  @Patch(':id/write-off')
+  writeOff(@Param('id') id: string, @Body('quantity') quantity: number) {
+    return this.productsService.writeOff(+id, quantity);
+  }
 }

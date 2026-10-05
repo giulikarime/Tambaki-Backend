@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './create-order.dto';
 import { AddOrderItemDto } from './add-order-item.dto';
@@ -16,6 +17,7 @@ export class OrdersService {
 
     const order = await this.prisma.order.create({
       data: {
+        nameClient: dto.nameClient,
         tableId: table.id,
         unitId: table.unitId,
         service_type: dto.service_type,
@@ -84,7 +86,7 @@ export class OrdersService {
       throw new NotFoundException('Comanda não encontrada.');
     }
 
-    await this.prisma.$transaction(async (transaction) => {
+    await this.prisma.$transaction(async (transaction: Prisma.TransactionClient) => {
       await transaction.orderItem.deleteMany({ where: { orderId: id } });
       await transaction.order.delete({ where: { id } });
 

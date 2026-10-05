@@ -11,6 +11,9 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { MenuModule } from './menu/menu.module';
+import { UnitModule } from './unit/unit.module';
+import { UploadsModule } from './uploads/upload.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -24,6 +27,10 @@ import { MenuModule } from './menu/menu.module';
     ProductsModule,
     SuppliersModule,
     MenuModule,
+    UploadsModule,
+    NotificationsModule,
+    UnitModule,
+    UploadsModule
   ],
   controllers: [AppController],
   providers: [AppService],

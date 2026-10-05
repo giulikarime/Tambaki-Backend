@@ -1,5 +1,4 @@
 import {
-  IsArray,
   IsBoolean,
   IsDateString,
   IsEnum,
@@ -28,14 +27,24 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'A marca é obrigatória.' })
   brand!: string;
 
-  @IsArray()
   @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
+  allergens!: Allergens[];
+
   @IsOptional()
-  allergens?: Allergens[];
+  @IsString()
+  @IsNotEmpty({ message: 'A URL do documento é obrigatória.' })
+  document_url!: string;
 
   @IsInt()
   @Min(0, { message: 'A quantidade em estoque não pode ser negativa.' })
   stock_quantity!: number;
+
+  @IsInt()
+  @Min(0, { message: 'A quantidade do pacote não pode ser negativa.' })
+  unit_of_product!: number;
+
+  @IsEnum(UnitOfMeasure, { message: 'A unidade de medida é obrigatória.' })
+  measure_unit_of_product!: UnitOfMeasure;
 
   @IsEnum(UnitOfMeasure,{ message: 'A unidade de medida é obrigatória.' })
   unit_of_measure!: UnitOfMeasure;
@@ -63,7 +72,6 @@ export class CreateProductDto {
 
   @IsEnum(ProductStatus, { message: 'Status inválido. Use "Ativo", "Inativo" ou "Descontinuado".' })
   status!: ProductStatus;
-
 
   @IsString()
   @IsNotEmpty({ message: 'O campo de lote é obrigatório.' })

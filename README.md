@@ -59,16 +59,16 @@ A API fica disponível em `http://localhost:3000`.
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/auth/register` | Cadastra um cliente/restaurante. Retorna `201 Created`. |
-| `POST` | `/auth/login` | Autentica um usuário usando e-mail e senha. |
-| `POST` | `/auth/logout` | Encerra a sessão do usuário. |
+| `POST` | `/auth/register` | Registra um cliente/restaurante. |
+| `POST` | `/auth/login` | Realiza autenticação com e-mail e senha. |
+| `POST` | `/auth/logout` | Retorna a resposta de logout. |
 
 Exemplo de login:
 
 ```json
 {
-	"email": "usuario@exemplo.com",
-	"password": "senha123"
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
 }
 ```
 
@@ -77,95 +77,87 @@ Exemplo de login:
 | Método | Rota | O que faz |
 | --- | --- | --- |
 | `GET` | `/users` | Lista todos os usuários. |
-| `POST` | `/users` | Cadastra um funcionário/usuário. |
+| `POST` | `/users` | Cadastra um funcionário ou usuário. |
 | `PATCH` | `/users/:id` | Atualiza os dados de um usuário. |
 | `DELETE` | `/users/:id` | Exclui um usuário. |
 
-O cadastro de usuário pode receber: `name`, `cpf`, `email`, `phone`, `password`, `role`, `active`, `access_level`, `employ_type`, `shift`, `hire_date`, `weekly_hours`, `salary`, `bankName` e `storeUnitId`.
+Campos principais de cadastro/atualização: `name`, `cpf`, `email`, `phone`, `password`, `role`, `access_level`, `employ_type`, `shift`, `hire_date`, `weekly_hours`, `salary`, `bankName`, `active` e `storeUnitId`.
 
 ### Produtos
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/products` | Cadastra um produto no estoque. Retorna `201 Created`. |
+| `POST` | `/products` | Cria um produto. |
 | `GET` | `/products` | Lista todos os produtos. |
 | `GET` | `/products/:id` | Busca um produto pelo ID. |
-| `PATCH` | `/products/:id` | Atualiza os dados de um produto. |
+| `GET` | `/products/enums` | Lista os valores disponíveis de enums do produto. |
+| `PATCH` | `/products/:id` | Atualiza um produto. |
 | `DELETE` | `/products/:id` | Exclui um produto. |
+| `PATCH` | `/products/:id/write-off` | Realiza baixa de estoque de um produto. |
 
-Os principais campos de produto são: `name`, `cost_price`, `category`, `brand`, `allergens`, `stock_quantity`, `unit_of_measure`, `current_stock`, `min_stock`, `max_stock`, `manufacture_date`, `expiration_date`, `available`, `storageLocation`, `status`, `batch`, `supplierId` e `unitId`.
+Campos principais: `name`, `cost_price`, `category`, `brand`, `allergens`, `stock_quantity`, `unit_of_product`, `measure_unit_of_product`, `unit_of_measure`, `document_url`, `min_stock`, `max_stock`, `manufacture_date`, `expiration_date`, `storageLocation`, `status`, `batch`, `supplierId` e `unitId`.
 
 ### Cardápio
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/menu` | Cadastra um item no cardápio. Retorna `201 Created`. |
+| `POST` | `/menu` | Cria um item do cardápio. |
 | `GET` | `/menu` | Lista todos os itens do cardápio. |
-| `GET` | `/menu/:id` | Busca um item do cardápio pelo ID. |
+| `GET` | `/menu/:id` | Busca um item do cardápio. |
 | `PATCH` | `/menu/:id` | Atualiza um item do cardápio. |
 | `DELETE` | `/menu/:id` | Exclui um item do cardápio. |
+| `POST` | `/menu/:id/tags/:tagId` | Associa uma tag ao item do cardápio. |
+| `DELETE` | `/menu/:id/tags/:tagId` | Remove a associação da tag. |
 
-Os campos de criação são: `name`, `description`, `category`, `price`, `available` e `unitId`.
+Campos principais: `name`, `description`, `category`, `price`, `img`, `available` e `unitId`.
 
 ### Tags
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/tags` | Cadastra uma tag. Retorna `201 Created`. |
+| `POST` | `/tags` | Cria uma tag. |
 | `GET` | `/tags` | Lista todas as tags. |
 | `PATCH` | `/tags/:id` | Atualiza uma tag. |
 | `DELETE` | `/tags/:id` | Exclui uma tag. |
-
-Para adicionar uma tag a um item do cardápio:
-
-Use os IDs do item do cardápio e da tag já cadastrados:
-
-```http
-POST /menu/1/tags/1
-```
-
-Nesse exemplo, o primeiro `1` é o ID do item do cardápio e o segundo `1` é o ID da tag. Essa rota não precisa de corpo JSON.
-
-Para consultar o item com suas tags, use `GET /menu/1`. Para remover a associação, use `DELETE /menu/1/tags/1`.
 
 ### Pedidos
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/orders` | Cria um pedido. Retorna `201 Created`. |
+| `POST` | `/orders` | Cria um pedido. |
 | `GET` | `/orders` | Lista todos os pedidos. |
 | `GET` | `/orders/:id` | Busca um pedido pelo ID. |
-| `PATCH` | `/orders/:id` | Atualiza o tipo, status ou mesa do pedido. |
-| `POST` | `/orders/:id/items` | Adiciona um item a um pedido. Retorna `201 Created`. |
+| `PATCH` | `/orders/:id` | Atualiza um pedido. |
+| `POST` | `/orders/:id/items` | Adiciona um item ao pedido. |
 | `PATCH` | `/orders/:id/close` | Fecha um pedido. |
-| `DELETE` | `/orders/:id` | Exclui um pedido e seus itens. |
+| `DELETE` | `/orders/:id` | Exclui um pedido. |
 
-Para criar um pedido, envie `tableId` e `service_type`; também podem ser enviados `status`, `total_value`, `unitId` e `menuId`. Para adicionar um item, envie `menuId` e `quantity`.
+Para criar um pedido, geralmente são enviados `tableId`, `service_type`, `nameClient`, `unitId` e, opcionalmente, `status`, `total_value` e `menuId`. Para adicionar um item, enviam-se `menuId` e `quantity`.
 
 ### Reservas
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/reservations` | Cria uma reserva. Retorna `201 Created`. |
+| `POST` | `/reservations` | Cria uma reserva. |
 | `GET` | `/reservations` | Lista todas as reservas. |
-| `GET` | `/reservations/:id` | Busca uma reserva pelo ID. |
-| `PATCH` | `/reservations/:id` | Atualiza os dados e o período da reserva. |
+| `GET` | `/reservations/:id` | Busca uma reserva. |
+| `PATCH` | `/reservations/:id` | Atualiza uma reserva. |
 | `PATCH` | `/reservations/:id/cancel` | Cancela uma reserva. |
 | `DELETE` | `/reservations/:id` | Exclui uma reserva. |
 
-Os campos obrigatórios para criar uma reserva são `name`, `phone`, `quantityPeople`, `startsAt`, `endsAt` e `tableId`. `status` e `unitId` são opcionais.
+Campos principais: `name`, `phone`, `quantityPeople`, `startsAtDate`, `startsAtHours`, `endsAtDate`, `endsAtHours`, `tableId` e `unitId`.
 
 ### Mesas
 
 | Método | Rota | O que faz |
 | --- | --- | --- |
-| `POST` | `/tables` | Cadastra uma mesa. Retorna `201 Created`. |
+| `POST` | `/tables` | Cadastra uma mesa. |
 | `GET` | `/tables` | Lista todas as mesas. |
 | `GET` | `/tables/:id` | Busca uma mesa pelo ID. |
-| `PATCH` | `/tables/:id` | Atualiza os dados de uma mesa. |
+| `PATCH` | `/tables/:id` | Atualiza uma mesa. |
 | `DELETE` | `/tables/:id` | Exclui uma mesa. |
 
-Os campos de criação são `table_number`, `capacity`, `status` e `unitId`.
+Campos principais: `table_number`, `capacity`, `status` e `unitId`.
 
 ### Fornecedores
 
@@ -174,14 +166,33 @@ Os campos de criação são `table_number`, `capacity`, `status` e `unitId`.
 | `POST` | `/suppliers` | Cadastra um fornecedor. |
 | `GET` | `/suppliers` | Lista todos os fornecedores. |
 | `GET` | `/suppliers/:id` | Busca um fornecedor pelo ID. |
-| `PATCH` | `/suppliers/:id` | Atualiza os dados de um fornecedor. |
+| `PATCH` | `/suppliers/:id` | Atualiza um fornecedor. |
 | `DELETE` | `/suppliers/:id` | Exclui um fornecedor. |
 
-Os campos de criação são: `company_name`, `trade_name`, `cnpj`, `phone`, `email`, `adress`, `businnes_hours`, `resposible_name`, `payment_terms` e `lead_time_days`.
+Campos principais: `company_name`, `trade_name`, `cnpj`, `phone`, `email`, `adress`, `businnes_hours`, `resposible_name`, `payment_terms` e `lead_time_days`.
+
+### Notificações
+
+| Método | Rota | O que faz |
+| --- | --- | --- |
+| `POST` | `/notifications` | Cria uma notificação. |
+| `GET` | `/notifications` | Lista notificações. |
+| `GET` | `/notifications/:id` | Busca uma notificação pelo ID. |
+| `PATCH` | `/notifications/:id/read` | Marca a notificação como lida. |
+| `DELETE` | `/notifications/:id` | Exclui uma notificação. |
+
+
+### Upload de arquivos
+
+| Método | Rota | O que faz |
+| --- | --- | --- |
+| `POST` | `/uploads` | Faz upload de um arquivo e retorna a URL pública. |
+
+O upload salva o arquivo em `./uploads` e retorna um endereço no formato `http://localhost:3000/uploads/<nome-do-arquivo>`.
 
 ## Frontend
 
-O frontend React está disponível no repositório [Tambaki-Frontend](https://github.com/giulikarime/Tambaki-Frontend.git).
+O frontend correspondente está disponível em: [Tambaki-Frontend](https://github.com/giulikarime/Tambaki-Frontend.git).
 
 ## Projeto acadêmico
 

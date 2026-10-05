@@ -67,7 +67,6 @@ model EmployeDocument {
   id           Int       @id @default(autoincrement())
   documentType String
   file_Url     String
-  issuedAt     DateTime  @db.Date
   valid_until  DateTime? @db.Date
   userId       Int
   user         User      @relation(fields: [userId], references: [id])
@@ -81,6 +80,8 @@ model Supplier {
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
+  category         ProductsCategory
+  url_document     String?            @db.VarChar(255)
   businnes_hours   String
   resposible_name  String             @db.VarChar(255)
   payment_terms    String
@@ -107,7 +108,10 @@ model Product {
   brand            String                 @db.VarChar(150)
   allergens        Allergens[]
   stock_quantity   Int
+  unit_of_product  Int
+  measure_unit_of_product UnitOfMeasure
   unit_of_measure  UnitOfMeasure
+  document_url     String                 @db.VarChar(255)
   min_stock        Int
   max_stock        Int
   manufacture_date DateTime               @db.Date
@@ -122,6 +126,7 @@ model Product {
   notification     Notification[]
   supplier         Supplier               @relation(fields: [supplierId], references: [id])
   unit             StoreUnit              @relation(fields: [unitId], references: [id])
+  
 }
 
 model Menu {
@@ -130,6 +135,7 @@ model Menu {
   description String       @db.VarChar(255)
   category    MenuCategory
   price       Float
+  img         String[]
   available   Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -218,6 +224,34 @@ model Reservation {
   @@index([unitId, endsAtDate, endsAtHours])
 }
 
+model Cost{
+  id   Int  @id @default(autoincrement())
+  name String  @db.VarChar(255)
+  costCategory costCategory
+  costType  costType
+  date  DateTime @db.Date
+}
+
+enum costCategory {
+Aluguel
+Salários_Equipe
+Pró_Labore_Sócios
+Contas_Consumo
+Sistema_PDV_ERP
+Contador
+Insumos_Ingredientes
+Impostos_Vendas
+Taxas_Maquininhas_Cartão
+Comissões_Apps_Delivery
+Embalagens
+}
+
+enum costType {
+  fixo
+  variavel
+}
+
+
 enum AccessLevel {
   Master
   Senior
@@ -237,7 +271,14 @@ enum OrderStatus {
 }
 
 enum MenuCategory {
-  Prato
+  Prato_Principal
+  Entrada
+  Saída
+  Rodizio
+  LaCarte
+  SelfService
+  Vegetariano
+  Vegano
   Sobremesa
   Bebidas
 }
@@ -269,14 +310,25 @@ enum ProductsCategory {
   Secos
   Bebida_Alcoolica
   Bebida_nao_Alcoolica
+  Panificação
+  Congelados
+  Materiais_Operacionais
+  Descartáveis
 }
 
 enum Allergens {
-  Nenhum
   Laticinios
   Glúten
   Oleaginosas
   Frutos_do_mar
+  Ovos
+  Amendoim
+  Castanhas
+  Soja
+  Trigo
+  Peixes
+  Crustáceos
+  Gergelim
 }
 
 enum UnitOfMeasure {
