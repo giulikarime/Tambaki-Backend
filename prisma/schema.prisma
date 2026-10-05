@@ -57,20 +57,12 @@ model User {
   bankName         String?           @db.VarChar(150)
   active           Boolean           @default(true)
   storeUnitId      Int
-  employe_document EmployeDocument[]
+  employe_document String?
   storeUnit        StoreUnit         @relation(fields: [storeUnitId], references: [id])
 
   @@unique([email, cpf])
 }
 
-model EmployeDocument {
-  id           Int       @id @default(autoincrement())
-  documentType String
-  file_Url     String
-  valid_until  DateTime? @db.Date
-  userId       Int
-  user         User      @relation(fields: [userId], references: [id])
-}
 
 model Supplier {
   id               Int                @id @default(autoincrement())
