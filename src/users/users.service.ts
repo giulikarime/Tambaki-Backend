@@ -84,6 +84,7 @@ export class UsersService {
         bankName: dto.bankName,
         active: dto.active,
         storeUnitId: dto.storeUnitId,
+        employe_document: dto.employe_document,
       },
     });
 
