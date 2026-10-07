@@ -53,7 +53,7 @@ model User {
   shift            ShiftType
   hire_date        DateTime?         @db.Date
   weekly_hours     Int?
-  salary           Decimal?          @db.Decimal(10, 2)
+  salary           Float?          
   bankName         String?           @db.VarChar(150)
   active           Boolean           @default(true)
   storeUnitId      Int
