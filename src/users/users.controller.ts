@@ -12,12 +12,7 @@ export class UsersController {
 	async findAll() {
 		return this.usersService.findAll();
 	}
-
-	@Get(':id')
-	async findOne(@Param('id', ParseIntPipe) id: number) {
-		return this.usersService.findOne(id);
-	}
-
+	
 	@Get('enums')
 	async getEnums() {
 		return {
@@ -26,6 +21,11 @@ export class UsersController {
 			shift: Object.values(ShiftType),
 		};
 	}
+	@Get(':id')
+	async findOne(@Param('id', ParseIntPipe) id: number) {
+		return this.usersService.findOne(id);
+	}
+
 
 	@Post()
 	async registerUser(@Body() dto: RegisterUserDto) {
