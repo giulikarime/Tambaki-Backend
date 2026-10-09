@@ -21,6 +21,7 @@ export class UsersController {
 			shift: Object.values(ShiftType),
 		};
 	}
+	
 	@Get(':id')
 	async findOne(@Param('id', ParseIntPipe) id: number) {
 		return this.usersService.findOne(id);
