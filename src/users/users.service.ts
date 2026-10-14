@@ -39,6 +39,7 @@ export class UsersService {
         bankName: dto.bankName,
         active: dto.active,
         storeUnitId: dto.storeUnitId,
+        employe_document: dto.employe_document,
       },
     });
 
@@ -55,6 +56,16 @@ export class UsersService {
     });
 
     return users.map(({ password: _, ...user }) => user);
+  }
+
+  async findOne(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException('Usuario não encontrado.');
+    }
+    return user;
   }
 
   async update(id: number, dto: UpdateUserDto) {
@@ -83,6 +94,7 @@ export class UsersService {
         bankName: dto.bankName,
         active: dto.active,
         storeUnitId: dto.storeUnitId,
+        employe_document: dto.employe_document,
       },
     });
 

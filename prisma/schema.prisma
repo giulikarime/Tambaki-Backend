@@ -53,7 +53,7 @@ model User {
   shift            ShiftType
   hire_date        DateTime?         @db.Date
   weekly_hours     Int?
-  salary           Decimal?          @db.Decimal(10, 2)
+  salary           Float?          
   bankName         String?           @db.VarChar(150)
   active           Boolean           @default(true)
   storeUnitId      Int
@@ -72,7 +72,7 @@ model Supplier {
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
-  category         ProductsCategory
+  category         ProductsCategory[]
   url_document     String?            @db.VarChar(255)
   resposible_name  String             @db.VarChar(255)
   lead_time_days   Int

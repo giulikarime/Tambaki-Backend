@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ProductsCategory } from "../../generated/prisma/enums";
 
 export class RegisterSupplierDto {
@@ -26,8 +26,8 @@ export class RegisterSupplierDto {
     @IsNotEmpty({ message: 'O endereço é obrigatório.' })
     adress!: string;
 
-    @IsEnum(ProductsCategory, { message: 'Categoria de produto inválida.' })
-    category!: ProductsCategory;
+    @IsEnum(ProductsCategory, { each: true, message: 'Categoria de produto inválida.' })
+    category!: ProductsCategory[];
 
     @IsOptional()
     @IsString()

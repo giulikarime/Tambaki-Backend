@@ -29,8 +29,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     MenuModule,
     UploadsModule,
     NotificationsModule,
-    UnitModule,
-    UploadsModule
+    UnitModule
   ],
   controllers: [AppController],
   providers: [AppService],
