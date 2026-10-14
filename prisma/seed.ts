@@ -151,9 +151,7 @@ async function main() {
         email: 'contato@peixenobre.com',
         adress: 'Av. Amazonas, 500',
         category: ProductsCategory.Carnes_e_Pescados,
-        businnes_hours: '08:00 às 18:00',
         resposible_name: 'Roberto Santos',
-        payment_terms: '30 dias',
         lead_time_days: 3,
       },
       {
@@ -164,9 +162,7 @@ async function main() {
         email: 'pedidos@mercadosantaluzia.com.br',
         adress: 'Ceagesp - Av. Dr. Gastão Vidigal, 1946, Pavilhão M-10, Vila Leopoldina - São Paulo / SP',
         category: ProductsCategory.Carnes_e_Pescados,
-        businnes_hours: 'Seg-Sáb: 04:00 às 14:00',
         resposible_name: 'Michael Jaylison',
-        payment_terms: 'Semanal / 7 dias',
         lead_time_days: 1,
       },
       {
@@ -177,14 +173,12 @@ async function main() {
         email: 'vendas@valedosolbebidas.com.br',
         adress: 'Av. Imperatriz Leopoldina, 800, Vila Leopoldina - São Paulo / SP',
         category: ProductsCategory.Laticínios_e_Frios,
-        businnes_hours: 'Seg-Sex: 07:00 às 17:00',
         resposible_name: 'Stefanni Germanota',
-        payment_terms: '14/28 dias',
         lead_time_days: 2,
       },
     ],
   });
-
+  console.log("Seed executado com sucesso!")
 }
 
 main()

@@ -74,9 +74,7 @@ model Supplier {
   adress           String             @db.VarChar(255)
   category         ProductsCategory
   url_document     String?            @db.VarChar(255)
-  businnes_hours   String
   resposible_name  String             @db.VarChar(255)
-  payment_terms    String
   lead_time_days   Int
   products         Product[]
   supplier_product SupplierProducts[]
