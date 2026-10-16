@@ -41,28 +41,27 @@ model Client {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  name             String            @db.VarChar(255)
-  cpf              String            @db.VarChar(11)
-  email            String            @db.VarChar(255)
-  phone            String            @db.VarChar(11)
-  password         String            @db.VarChar(60)
-  role             String            @db.VarChar(150)
+  id               Int         @id @default(autoincrement())
+  name             String      @db.VarChar(255)
+  cpf              String      @db.VarChar(11)
+  email            String      @db.VarChar(255)
+  phone            String      @db.VarChar(11)
+  password         String      @db.VarChar(60)
+  role             String      @db.VarChar(150)
   access_level     AccessLevel
   employ_type      EmployType
   shift            ShiftType
-  hire_date        DateTime?         @db.Date
+  hire_date        DateTime?   @db.Date
   weekly_hours     Int?
-  salary           Float?          
-  bankName         String?           @db.VarChar(150)
-  active           Boolean           @default(true)
+  salary           Float?
+  bankName         String?     @db.VarChar(150)
+  active           Boolean     @default(true)
   storeUnitId      Int
   employe_document String?
-  storeUnit        StoreUnit         @relation(fields: [storeUnitId], references: [id])
+  storeUnit        StoreUnit   @relation(fields: [storeUnitId], references: [id])
 
   @@unique([email, cpf])
 }
-
 
 model Supplier {
   id               Int                @id @default(autoincrement())
@@ -93,32 +92,31 @@ model SupplierProducts {
 }
 
 model Product {
-  id               Int                    @id @default(autoincrement())
-  name             String                 @db.VarChar(150)
-  cost_price       Float
-  category         ProductsCategory
-  brand            String                 @db.VarChar(150)
-  allergens        Allergens[]
-  stock_quantity   Int
-  unit_of_product  Int
+  id                      Int                    @id @default(autoincrement())
+  name                    String                 @db.VarChar(150)
+  cost_price              Float
+  category                ProductsCategory
+  brand                   String                 @db.VarChar(150)
+  allergens               Allergens[]
+  stock_quantity          Int
+  unit_of_product         Int
   measure_unit_of_product UnitOfMeasure
-  unit_of_measure  UnitOfMeasure
-  document_url     String                 @db.VarChar(255)
-  min_stock        Int
-  max_stock        Int
-  manufacture_date DateTime               @db.Date
-  expiration_date  DateTime               @db.Date
-  storageLocation  ProductStorageLocation
-  status           ProductStatus
-  batch            String                 @db.VarChar(30)
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @updatedAt
-  supplierId       Int
-  unitId           Int
-  notification     Notification[]
-  supplier         Supplier               @relation(fields: [supplierId], references: [id])
-  unit             StoreUnit              @relation(fields: [unitId], references: [id])
-  
+  unit_of_measure         UnitOfMeasure
+  document_url            String                 @db.VarChar(255)
+  min_stock               Int
+  max_stock               Int
+  manufacture_date        DateTime               @db.Date
+  expiration_date         DateTime               @db.Date
+  storageLocation         ProductStorageLocation
+  status                  ProductStatus
+  batch                   String                 @db.VarChar(30)
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  supplierId              Int
+  unitId                  Int
+  notification            Notification[]
+  supplier                Supplier               @relation(fields: [supplierId], references: [id])
+  unit                    StoreUnit              @relation(fields: [unitId], references: [id])
 }
 
 model Menu {
@@ -216,33 +214,33 @@ model Reservation {
   @@index([unitId, endsAtDate, endsAtHours])
 }
 
-model Cost{
-  id   Int  @id @default(autoincrement())
-  name String  @db.VarChar(255)
+model Cost {
+  id           Int          @id @default(autoincrement())
+  name         String       @db.VarChar(255)
   costCategory costCategory
-  costType  costType
-  date  DateTime @db.Date
+  costType     costType
+  value        Float
+  date         DateTime     @db.Date
 }
 
 enum costCategory {
-Aluguel
-Salários_Equipe
-Pró_Labore_Sócios
-Contas_Consumo
-Sistema_PDV_ERP
-Contador
-Insumos_Ingredientes
-Impostos_Vendas
-Taxas_Maquininhas_Cartão
-Comissões_Apps_Delivery
-Embalagens
+  Aluguel
+  Salários_Equipe
+  Pró_Labore_Sócios
+  Contas_Consumo
+  Sistema_PDV_ERP
+  Contador
+  Insumos_Ingredientes
+  Impostos_Vendas
+  Taxas_Maquininhas_Cartão
+  Comissões_Apps_Delivery
+  Embalagens
 }
 
 enum costType {
   fixo
   variavel
 }
-
 
 enum AccessLevel {
   Master

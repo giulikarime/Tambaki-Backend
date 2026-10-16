@@ -13,6 +13,7 @@ export class CostsService {
         name: dto.name,
         costCategory: dto.costCategory,
         costType: dto.costType,
+        value: dto.value,
         date: dto.date,
       }
     })
@@ -24,6 +25,14 @@ export class CostsService {
 
   findOne(id: number) {
     return this.prisma.cost.findUnique({ where: { id } })
+  }
+
+  findFixedCosts() {
+    return this.prisma.cost.findMany({ where: { costType: 'fixo' } })
+  }
+
+  findVariableCosts() {
+    return this.prisma.cost.findMany({ where: { costType: 'variavel' } })
   }
 
   update(id: number, updateCostDto: UpdateCostDto) {

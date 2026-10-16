@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common'
+import { Controller, ParseIntPipe } from '@nestjs/common'
 import { CostsService } from './costs.service'
 import { Body, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { CreateCostDto } from './create-costs.dto'
@@ -19,18 +19,28 @@ export class CostsController {
     return this.costsService.findAll()
   }
 
+    @Get('fixed')
+  findFixedCosts() {
+    return this.costsService.findFixedCosts()
+  }
+
+  @Get('variable')
+  findVariableCosts() {
+    return this.costsService.findVariableCosts()
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.costsService.findOne(+id)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCostDto: UpdateCostDto) {
+  update(@Param('id', ParseIntPipe) id: string, @Body() updateCostDto: UpdateCostDto) {
     return this.costsService.update(+id, updateCostDto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.costsService.remove(+id)
   }
 }

@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -18,7 +16,6 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateNotificationsDto) {
     return this.notificationsService.create(dto);
   }
@@ -39,7 +36,6 @@ export class NotificationsController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.notificationsService.remove(id);
   }

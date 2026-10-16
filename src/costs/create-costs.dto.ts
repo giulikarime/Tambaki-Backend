@@ -14,6 +14,10 @@ export class CreateCostDto {
   @IsNotEmpty({ message: 'O tipo é obrigatório' })
   costType!: costType  
 
+  @IsNumber()
+  @IsNotEmpty({ message: 'O valor é obrigatório' })
+  value!: number
+
   @IsDateString()
   @IsNotEmpty({ message: 'A data é obrigatória' })
   date!: Date
