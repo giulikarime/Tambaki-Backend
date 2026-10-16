@@ -30,17 +30,17 @@ export class CostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: string) {
-    return this.costsService.findOne(+id)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.costsService.findOne(id)
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: string, @Body() updateCostDto: UpdateCostDto) {
-    return this.costsService.update(+id, updateCostDto)
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCostDto: UpdateCostDto) {
+    return this.costsService.update(id, updateCostDto)
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.costsService.remove(+id)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.costsService.remove(id)
   }
 }
