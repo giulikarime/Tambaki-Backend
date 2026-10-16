@@ -19,7 +19,7 @@ export class CostsController {
     return this.costsService.findAll()
   }
 
-    @Get('fixed')
+  @Get('fixed')
   findFixedCosts() {
     return this.costsService.findFixedCosts()
   }
