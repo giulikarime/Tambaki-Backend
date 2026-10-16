@@ -14,6 +14,7 @@ import { MenuModule } from './menu/menu.module';
 import { UnitModule } from './unit/unit.module';
 import { UploadsModule } from './uploads/upload.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { CmvModule } from './cmv/cmv.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     MenuModule,
     UploadsModule,
     NotificationsModule,
-    UnitModule
+    UnitModule,
+    CmvModule
   ],
   controllers: [AppController],
   providers: [AppService],

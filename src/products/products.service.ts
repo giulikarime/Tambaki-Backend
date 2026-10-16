@@ -242,12 +242,28 @@ export class ProductsService {
       throw new BadRequestException('Quantidade de baixa maior que o estoque disponível.');
     }
 
-    const updated = await this.prisma.product.update({
-      where: { id },
-      data: {
-        stock_quantity: { decrement: quantity },
+        const updated = await this.prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const updatedProduct = await tx.product.update({
+          where: { id },
+          data: { stock_quantity: { decrement: quantity } },
+        });
+
+        await tx.cmvEntry.create({
+          data: {
+            type: 'Produto',
+            amount: Math.round(product.cost_price * quantity * 100) / 100,
+            quantity,
+            description: 'Baixa de estoque',
+            date: new Date(),
+            productId: product.id,
+            unitId: product.unitId,
+          },
+        });
+
+        return updatedProduct;
       },
-    });
+    );
 
     await this.checkAndNotifyProductAlerts(updated);
 

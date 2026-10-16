@@ -24,6 +24,7 @@ model StoreUnit {
   reservations Reservation[]
   tables       Table[]
   user         User[]
+  cmvEntries   CmvEntry[]
 
   @@unique([company_name, cnpj])
 }
@@ -114,6 +115,7 @@ model Product {
   supplierId       Int
   unitId           Int
   notification     Notification[]
+  cmvEntries       CmvEntry[]
   supplier         Supplier               @relation(fields: [supplierId], references: [id])
   unit             StoreUnit              @relation(fields: [unitId], references: [id])
   
@@ -220,6 +222,30 @@ model Cost{
   costCategory costCategory
   costType  costType
   date  DateTime @db.Date
+}
+
+model CmvEntry {
+  id          Int          @id @default(autoincrement())
+  type        CmvEntryType
+  amount      Float
+  quantity    Float?
+  description String?      @db.VarChar(255)
+  date        DateTime     @db.Date
+  createdAt   DateTime     @default(now())
+  productId   Int?
+  unitId      Int
+  product     Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+  unit        StoreUnit    @relation(fields: [unitId], references: [id])
+
+  @@index([unitId, date])
+}
+
+enum CmvEntryType {
+  Produto
+  Frete
+  Imposto_Insumo
+  Conservacao
+  Embalagem
 }
 
 enum costCategory {
