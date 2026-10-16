@@ -126,6 +126,7 @@ model Menu {
   category    MenuCategory
   price       Float
   img         String[]
+  allergens   Allergens[]
   available   Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
