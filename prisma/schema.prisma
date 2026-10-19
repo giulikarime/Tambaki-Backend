@@ -71,11 +71,9 @@ model Supplier {
   phone            String             @db.VarChar(11)
   email            String             @db.VarChar(255)
   adress           String             @db.VarChar(255)
-  category         ProductsCategory
+  category         ProductsCategory[]
   url_document     String?            @db.VarChar(255)
-  businnes_hours   String
   resposible_name  String             @db.VarChar(255)
-  payment_terms    String
   lead_time_days   Int
   products         Product[]
   supplier_product SupplierProducts[]
@@ -126,6 +124,7 @@ model Menu {
   category    MenuCategory
   price       Float
   img         String[]
+  allergens   Allergens[]
   available   Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
