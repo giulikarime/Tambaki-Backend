@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -19,7 +17,6 @@ export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateUnitDto) {
     return this.unitService.create(dto);
   }
@@ -40,7 +37,6 @@ export class UnitController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.unitService.delete(id);
   }

@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -19,7 +17,6 @@ export class TablesController {
   constructor(private readonly tablesService: TablesService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createTableDto: CreateTableDto) {
     return this.tablesService.create(createTableDto);
   }
@@ -43,7 +40,6 @@ export class TablesController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.tablesService.remove(id);
   }

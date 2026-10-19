@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RegisterUserDto } from './register-user.dto';
 import { UpdateUserDto } from './update-user.dto';
@@ -12,7 +12,7 @@ export class UsersController {
 	async findAll() {
 		return this.usersService.findAll();
 	}
-	
+
 	@Get('enums')
 	async getEnums() {
 		return {
@@ -21,12 +21,11 @@ export class UsersController {
 			shift: Object.values(ShiftType),
 		};
 	}
-	
+
 	@Get(':id')
 	async findOne(@Param('id', ParseIntPipe) id: number) {
 		return this.usersService.findOne(id);
 	}
-
 
 	@Post()
 	async registerUser(@Body() dto: RegisterUserDto) {
@@ -42,7 +41,6 @@ export class UsersController {
 	}
 
 	@Delete(':id')
-	@HttpCode(HttpStatus.OK)
 	async delete(@Param('id', ParseIntPipe) id: number) {
 		return this.usersService.delete(id);
 	}
