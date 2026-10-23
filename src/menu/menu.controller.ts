@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, Param,ParseIntPipe, Patch, Post} from '@n
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './create-menu.dto';
 import { UpdateMenuDto } from './update-menu.dto';
-import { MenuCategory } from '../../generated/prisma/enums';
+import { Allergens, MenuCategory } from '../../generated/prisma/enums';
 
 @Controller('menu')
 export class MenuController {
@@ -21,7 +21,8 @@ export class MenuController {
   @Get('enum')
   async getEnums() {
       return {
-          category: Object.values(MenuCategory)
+          category: Object.values(MenuCategory),
+          allergens: Object.values(Allergens),
       };
   }
 

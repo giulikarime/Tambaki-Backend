@@ -1,5 +1,5 @@
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { MenuCategory } from '../../generated/prisma/client';
+import { MenuCategory, Allergens } from '../../generated/prisma/client';
 
 export class UpdateMenuDto {
   @IsOptional()
@@ -11,12 +11,12 @@ export class UpdateMenuDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(MenuCategory)
+  @IsEnum(MenuCategory, { message: 'Categoria de menu inválida.' })
   category?: MenuCategory;
 
   @IsOptional()
   @IsNumber({})
-  @Min(1)
+  @Min(1, { message: 'O preço do menu deve ser maior que zero.' })
   price?: number;
 
   @IsOptional()
@@ -27,4 +27,9 @@ export class UpdateMenuDto {
   @IsArray()
   @IsString({ each: true })
   img?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
+  allergens?: Allergens[];
 }
