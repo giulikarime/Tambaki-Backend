@@ -34,16 +34,8 @@ export class RegisterSupplierDto {
     url_document?: string;
 
     @IsString()
-    @IsNotEmpty({ message: 'O horario de funcionamento é obrigatório.' })
-    businnes_hours!: string;
-
-    @IsString()
     @IsNotEmpty({ message: 'O nome do resposável é obrigatório.' })
     resposible_name!: string;
-
-    @IsString()
-    @IsNotEmpty({ message: 'As condições de pagamento são obrigatórias.' })
-    payment_terms!: string;
 
     @IsInt()
     @IsNotEmpty({ message: 'O prazo de entrega é obrigatório.' })

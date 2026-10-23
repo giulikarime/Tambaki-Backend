@@ -40,18 +40,8 @@ export class UpdateSupplierDto {
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'O horário de funcionamento não pode ser vazio.' })
-  businnes_hours?: string;
-
-  @IsOptional()
-  @IsString()
   @IsNotEmpty({ message: 'O nome do responsável não pode ser vazio.' })
   resposible_name?: string;
-
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty({ message: 'As condições de pagamento não podem ser vazias.' })
-  payment_terms?: string;
 
   @IsOptional()
   @IsInt()
