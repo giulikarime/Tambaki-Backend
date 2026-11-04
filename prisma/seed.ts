@@ -3,6 +3,8 @@ import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import {
   AccessLevel,
+  costCategory,
+  costType,
   EmployType,
   PrismaClient,
   ProductsCategory,
@@ -178,9 +180,45 @@ async function main() {
       },
     ],
   });
+
+  //Custos
+  await prisma.cost.createMany({
+    data: [
+      {
+        name: "Aluguel",
+        costCategory: costCategory.Aluguel,
+        costType: costType.fixo,
+        amount: 2000.00,
+        date: new Date("2026-11-04")
+
+      },
+      {
+        name: "Taxa de Cartão",
+        costCategory: costCategory.Taxas_Maquininhas_Cartão,
+        costType: costType.variavel,
+        amount: 550.00,
+        date: new Date("2026-11-09")
+
+      },
+      {
+        name: "Caixa de papelão",
+        costCategory: costCategory.Embalagens,
+        costType: costType.variavel,
+        amount: 220.00,
+        date: new Date("2026-11-15")
+      },
+      {
+        name: "Salários Funcionários",
+        costCategory: costCategory.Salários_Equipe,
+        costType: costType.fixo,
+        amount: 7000.00,
+        date: new Date("2026-10-09")
+
+      },
+    ],
+  });
   console.log("Seed executado com sucesso!")
 }
-
 main()
   .catch((e) => {
     console.error('Erro ao executar o seed:');
