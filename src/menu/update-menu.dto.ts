@@ -1,5 +1,7 @@
-import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { MenuCategory, Allergens } from '../../generated/prisma/client';
+import { TagInputDto } from './create-menu.dto';
 
 export class UpdateMenuDto {
   @IsOptional()
@@ -32,4 +34,10 @@ export class UpdateMenuDto {
   @IsArray()
   @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
   allergens?: Allergens[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagInputDto)
+  tags?: TagInputDto[];
 }

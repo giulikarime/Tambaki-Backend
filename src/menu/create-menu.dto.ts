@@ -43,7 +43,7 @@ export class CreateMenuDto {
   tags?: TagInputDto[];
 }
 
-class TagInputDto {
+export class TagInputDto {
   @IsString()
   @IsNotEmpty({message: 'O nome da tag é obrigatória.'})
   name!: string;

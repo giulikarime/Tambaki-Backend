@@ -76,14 +76,15 @@ export class MenuService {
       }
     }
 
+    const { tags, ...menuData } = dto;
     const updated = await this.prisma.menu.update({
       where: { id },
       data: {
         ...menuData,
-        ...(tags ? {
+        ...(tags !== undefined ? {
           tags: {
-            set: [], // Limpa as tags antigas e reseta
-            connectOrCreate: tags.map((tag: any) => ({
+            set: [],
+            connectOrCreate: tags.map((tag) => ({
               where: { name: tag.name },
               create: { 
                 name: tag.name, 
