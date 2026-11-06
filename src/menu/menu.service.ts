@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMenuDto } from './create-menu.dto';
 import { UpdateMenuDto } from './update-menu.dto';
@@ -11,6 +11,13 @@ export class MenuService {
     const unit = await this.prisma.storeUnit.findUnique({ where: { id: dto.unitId } });
     if (!unit) {
       throw new NotFoundException('Unidade não encontrada.');
+    }
+
+    const existingMenuItem = await this.prisma.menu.findFirst({ 
+      where: { name: dto.name, unitId: dto.unitId } 
+    });
+    if (existingMenuItem) {
+      throw new ConflictException('Já existe um prato com esse nome nesta unidade.');
     }
 
     const { tags, ...menuData } = dto;
@@ -47,6 +54,15 @@ export class MenuService {
     });
     if (!menuItem) {
       throw new NotFoundException('Item do cardápio não encontrado.');
+    }
+
+    if (dto.name !== undefined) {
+      const existingMenuItem = await this.prisma.menu.findFirst({ 
+        where: { name: dto.name, unitId: menuItem.unitId, NOT: { id } } 
+      });
+      if (existingMenuItem) {
+        throw new ConflictException('Já existe um prato com esse nome nesta unidade.');
+      }
     }
 
     const updated = await this.prisma.menu.update({
