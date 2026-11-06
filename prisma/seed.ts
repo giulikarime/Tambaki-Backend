@@ -186,7 +186,6 @@ async function main() {
   await prisma.cost.createMany({
     data: [
       {
-        name: "Aluguel",
         costCategory: costCategory.Aluguel,
         costType: costType.Fixo,
         amount: 2000.00,
@@ -194,7 +193,6 @@ async function main() {
 
       },
       {
-        name: "Taxa de Cartão",
         costCategory: costCategory.Taxas_Maquininhas_Cartão,
         costType: costType.Variavel,
         amount: 550.00,
@@ -202,14 +200,12 @@ async function main() {
 
       },
       {
-        name: "Caixa de papelão",
         costCategory: costCategory.Embalagens,
         costType: costType.Variavel,
         amount: 220.00,
         date: new Date("2026-11-15")
       },
       {
-        name: "Salários Funcionários",
         costCategory: costCategory.Salários_Equipe,
         costType: costType.Fixo,
         amount: 7000.00,

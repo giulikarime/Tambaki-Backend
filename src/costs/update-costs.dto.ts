@@ -2,10 +2,6 @@ import { IsString, IsNumber, IsDateString, IsOptional, IsNotEmpty, IsEnum } from
 import { costCategory, costType } from '../../generated/prisma/client';
 
 export class UpdateCostDto {
-    @IsOptional()
-    @IsString()
-    @IsNotEmpty({ message: 'O nome não pode ser vazio' })
-    name?: string
 
     @IsOptional()
     @IsEnum(costCategory)

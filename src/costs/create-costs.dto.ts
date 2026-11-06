@@ -2,9 +2,6 @@ import { IsString, IsNumber, IsDateString, IsNotEmpty, IsEnum } from 'class-vali
 import { costCategory, costType } from '../../generated/prisma/client';
 
 export class CreateCostDto {
-  @IsString()
-  @IsNotEmpty({ message: 'O nome é obrigatório' })
-  name!: string
 
   @IsEnum(costCategory)
   @IsNotEmpty({ message: 'A categoria é obrigatória' })

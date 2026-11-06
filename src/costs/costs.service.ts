@@ -10,7 +10,6 @@ export class CostsService {
   create(dto: CreateCostDto) {
     return this.prisma.cost.create({
       data: {
-        name: dto.name,
         costCategory: dto.costCategory,
         costType: dto.costType,
         amount: dto.amount,

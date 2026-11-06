@@ -1,5 +1,5 @@
 import { IsArray, IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ProductsCategory } from '../../generated/prisma/enums';
+import { LeadTimeDays, ProductsCategory } from '../../generated/prisma/enums';
 
 export class UpdateSupplierDto {
   @IsOptional()
@@ -43,7 +43,6 @@ export class UpdateSupplierDto {
   @IsNotEmpty({ message: 'O nome do responsável não pode ser vazio.' })
   resposible_name?: string;
 
-  @IsOptional()
-  @IsInt()
-  lead_time_days?: number;
+  @IsEnum(LeadTimeDays)
+  lead_time_days!: LeadTimeDays;
 }

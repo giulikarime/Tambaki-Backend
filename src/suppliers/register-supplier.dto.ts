@@ -1,5 +1,5 @@
 import { IsArray, IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { ProductsCategory } from "../../generated/prisma/enums";
+import { LeadTimeDays, ProductsCategory } from "../../generated/prisma/enums";
 
 export class RegisterSupplierDto {
     @IsString()
@@ -37,7 +37,6 @@ export class RegisterSupplierDto {
     @IsNotEmpty({ message: 'O nome do resposável é obrigatório.' })
     resposible_name!: string;
 
-    @IsInt()
-    @IsNotEmpty({ message: 'O prazo de entrega é obrigatório.' })
-    lead_time_days!: number;
+    @IsEnum(LeadTimeDays)
+    lead_time_days!: LeadTimeDays;
 }
