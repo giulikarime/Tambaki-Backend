@@ -20,7 +20,7 @@ export class UpdateCostDto {
     @IsOptional()
     @IsNumber()
     @IsNotEmpty({ message: 'O valor não pode ser vazio' })
-    value?: number
+    amount?: number
 
     @IsOptional()
     @IsDateString()
