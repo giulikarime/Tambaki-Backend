@@ -26,9 +26,7 @@ npm install
 Configure as variáveis de ambiente no arquivo `.env` e execute as migrações e o seed:
 
 ```bash
-npx prisma migrate dev
-npx prisma generate
-npx prisma db seed
+npm run db
 ```
 
 Inicie a API:
