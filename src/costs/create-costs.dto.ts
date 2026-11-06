@@ -7,7 +7,7 @@ export class CreateCostDto {
   name!: string
 
   @IsEnum(costCategory)
-  @IsNotEmpty({ message: 'O tipo é obrigatório' })
+  @IsNotEmpty({ message: 'A categoria é obrigatória' })
   costCategory!: costCategory
 
   @IsEnum(costType)
@@ -16,7 +16,7 @@ export class CreateCostDto {
 
   @IsNumber()
   @IsNotEmpty({ message: 'O valor é obrigatório' })
-  value!: number
+  amount!: number
 
   @IsDateString()
   @IsNotEmpty({ message: 'A data é obrigatória' })

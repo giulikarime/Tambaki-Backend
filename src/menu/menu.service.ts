@@ -24,8 +24,19 @@ export class MenuService {
     const menuItem = await this.prisma.menu.create({
       data: {
         ...menuData,
-        ...(tags ? { tags: { create: tags } } : {}),
+        ...(tags && tags.length > 0 ? {
+          tags: {
+            connectOrCreate: tags.map((tag: any) => ({
+              where: { name: tag.name },
+              create: { 
+                name: tag.name, 
+                color: tag.color || '#cccccc' 
+              },
+            })),
+          },
+        } : {}),
       },
+      include: { tags: true },
     });
 
     return { message: 'Item do cardápio criado com sucesso!', menuItem };
@@ -40,7 +51,7 @@ export class MenuService {
   async findOne(id: number) {
     const menuItem = await this.prisma.menu.findUnique({ 
       where: { id }, 
-      include: { tags: true} 
+      include: { tags: true } 
     });
     if (!menuItem) {
       throw new NotFoundException('Item do cardápio não encontrado.');
@@ -67,7 +78,22 @@ export class MenuService {
 
     const updated = await this.prisma.menu.update({
       where: { id },
-      data: dto
+      data: {
+        ...menuData,
+        ...(tags ? {
+          tags: {
+            set: [], // Limpa as tags antigas e reseta
+            connectOrCreate: tags.map((tag: any) => ({
+              where: { name: tag.name },
+              create: { 
+                name: tag.name, 
+                color: tag.color || '#cccccc' 
+              },
+            })),
+          }
+        } : {})
+      },
+      include: { tags: true }
     });
 
     return { message: 'Item do cardápio atualizado com sucesso!', menuItem: updated };
@@ -100,7 +126,7 @@ export class MenuService {
     const updated = await this.prisma.menu.update({
       where: { id: menuId },
       data: { tags: { connect: { id: tagId }}},
-      include: { tags: true},
+      include: { tags: true },
     });
     return { message: 'Tag adicionada ao prato!', menuItem: updated };
   }

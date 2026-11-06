@@ -13,7 +13,7 @@ export class CostsService {
         name: dto.name,
         costCategory: dto.costCategory,
         costType: dto.costType,
-        value: dto.value,
+        amount: dto.amount,
         date: dto.date,
       }
     })
