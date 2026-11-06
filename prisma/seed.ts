@@ -6,6 +6,7 @@ import {
   costCategory,
   costType,
   EmployType,
+  LeadTimeDays,
   PrismaClient,
   ProductsCategory,
   ReservationStatus,
@@ -154,7 +155,7 @@ async function main() {
         adress: 'Av. Amazonas, 500',
         category: [ProductsCategory.Carnes_e_Pescados],
         resposible_name: 'Roberto Santos',
-        lead_time_days: 3,
+        lead_time_days: LeadTimeDays.de_1_a_3_Dias,
       },
       {
         company_name: 'Mercado Santa Luzia LTDA',
@@ -165,7 +166,7 @@ async function main() {
         adress: 'Ceagesp - Av. Dr. Gastão Vidigal, 1946, Pavilhão M-10, Vila Leopoldina - São Paulo / SP',
         category: [ProductsCategory.Carnes_e_Pescados],
         resposible_name: 'Michael Jaylison',
-        lead_time_days: 1,
+        lead_time_days: LeadTimeDays.de_4_a_6_Dias,
       },
       {
         company_name: 'Distribuidora de Bebidas Vale do Sol S.A.',
@@ -176,7 +177,7 @@ async function main() {
         adress: 'Av. Imperatriz Leopoldina, 800, Vila Leopoldina - São Paulo / SP',
         category: [ProductsCategory.Laticínios_e_Frios],
         resposible_name: 'Stefanni Germanota',
-        lead_time_days: 2,
+        lead_time_days: LeadTimeDays.de_7_a_10_Dias,
       },
     ],
   });
