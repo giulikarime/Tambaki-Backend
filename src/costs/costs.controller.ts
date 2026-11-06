@@ -3,6 +3,7 @@ import { CostsService } from './costs.service'
 import { Body, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { CreateCostDto } from './create-costs.dto'
 import { UpdateCostDto } from './update-costs.dto'
+import { costCategory, costType} from '../../generated/prisma/enums'
 
 
 @Controller('costs')
@@ -18,6 +19,14 @@ export class CostsController {
   findAll() {
     return this.costsService.findAll()
   }
+
+  @Get('enums')
+    async getEnums() {
+        return {
+            costCategory: Object.values(costCategory),
+            costType: Object.values(costType)
+        };
+    }
 
   @Get('fixed')
   findFixedCosts() {

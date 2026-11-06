@@ -28,11 +28,11 @@ export class CostsService {
   }
 
   findFixedCosts() {
-    return this.prisma.cost.findMany({ where: { costType: 'fixo' } })
+    return this.prisma.cost.findMany({ where: { costType: 'Fixo' } })
   }
 
   findVariableCosts() {
-    return this.prisma.cost.findMany({ where: { costType: 'variavel' } })
+    return this.prisma.cost.findMany({ where: { costType: 'Variavel' } })
   }
 
   update(id: number, updateCostDto: UpdateCostDto) {

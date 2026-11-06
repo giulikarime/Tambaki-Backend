@@ -237,8 +237,8 @@ enum costCategory {
 }
 
 enum costType {
-  fixo
-  variavel
+  Fixo
+  Variavel
 }
 
 enum AccessLevel {
