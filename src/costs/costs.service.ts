@@ -34,6 +34,28 @@ export class CostsService {
     return this.prisma.cost.findMany({ where: { costType: 'Variavel' } })
   }
 
+  async findTotals() {
+    const [fixedCosts, variableCosts] = await Promise.all([
+      this.prisma.cost.aggregate({
+        where: { costType: 'Fixo' },
+        _sum: { amount: true },
+      }),
+      this.prisma.cost.aggregate({
+        where: { costType: 'Variavel' },
+        _sum: { amount: true },
+      }),
+    ])
+
+    const fixed = fixedCosts._sum.amount ?? 0
+    const variable = variableCosts._sum.amount ?? 0
+
+    return {
+      fixed,
+      variable,
+      total: fixed + variable,
+    }
+  }
+
   update(id: number, updateCostDto: UpdateCostDto) {
     return this.prisma.cost.update({
       where: { id },

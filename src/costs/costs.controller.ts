@@ -38,6 +38,11 @@ export class CostsController {
     return this.costsService.findVariableCosts()
   }
 
+  @Get('totals')
+  findTotals() {
+    return this.costsService.findTotals()
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.costsService.findOne(id)
