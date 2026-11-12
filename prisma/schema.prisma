@@ -112,6 +112,8 @@ model Product {
   updatedAt               DateTime               @updatedAt
   supplierId              Int
   unitId                  Int
+  platePrice              Float
+  Cost                    Cost[]
   notification            Notification[]
   supplier                Supplier               @relation(fields: [supplierId], references: [id])
   unit                    StoreUnit              @relation(fields: [unitId], references: [id])
@@ -174,13 +176,14 @@ model Order {
 }
 
 model OrderItem {
-  id         Int   @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   quantity   Int
   unit_price Float
+  movementId Movement[]
   orderId    Int
   menuId     Int
-  menu       Menu  @relation(fields: [menuId], references: [id])
-  order      Order @relation(fields: [orderId], references: [id])
+  menu       Menu       @relation(fields: [menuId], references: [id])
+  order      Order      @relation(fields: [orderId], references: [id])
 }
 
 model Notification {
@@ -214,25 +217,35 @@ model Reservation {
 }
 
 model Cost {
-  id                  Int                @id @default(autoincrement())
-  costCategory        costCategory
-  costType            costType
-  amount              Float
-  date                DateTime           @db.Date
-  totalCostVariable   TotalCostVariable[]
-  totalCostFixed      TotalCostFixed[]
+  id           Int          @id @default(autoincrement())
+  costCategory costCategory
+  costType     costType
+  amount       Float
+  date         DateTime     @db.Date
+  productId    Int
+  product      Product      @relation(fields: [productId], references: [id])
+  costMovement Movement[]
+  createAt     DateTime     @default(now())
+  updateAt     DateTime     @updatedAt
 }
 
-model TotalCostVariable {
-  id                Int    @id @default(autoincrement())
-  totalVariableCost Float
-  cost              Cost[]
+model Movement {
+  id             Int            @id @default(autoincrement())
+  amount         Float
+  date           DateTime       @db.Date
+  typeOfMovement TypeOfMovement
+  quantity       Int
+  unitcost       Float
+  order          OrderItem[]
+  Cost           Cost[]
+  createAt       DateTime       @default(now())
+  updateAt       DateTime       @updatedAt
 }
 
-model TotalCostFixed {
-  id                Int    @id @default(autoincrement())
-  totalFixedCost Float
-  cost              Cost[]
+enum TypeOfMovement {
+  Entrada
+  Saida
+  Ajuste
 }
 
 enum costCategory {

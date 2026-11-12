@@ -3,15 +3,19 @@ import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import {
   AccessLevel,
+  Allergens,
   costCategory,
   costType,
   EmployType,
   LeadTimeDays,
   PrismaClient,
+  ProductStatus,
+  ProductStorageLocation,
   ProductsCategory,
   ReservationStatus,
   ShiftType,
-  TableStatus
+  TableStatus,
+  UnitOfMeasure,
 } from '../generated/prisma/client.js';
 
 const adapter = new PrismaPg({
@@ -25,6 +29,7 @@ async function main() {
   await prisma.reservation.deleteMany();
   await prisma.table.deleteMany();
   await prisma.notification.deleteMany();
+  await prisma.cost.deleteMany();
   await prisma.product.deleteMany();
   await prisma.supplierProducts.deleteMany();
   await prisma.user.deleteMany();
@@ -95,23 +100,71 @@ async function main() {
   }
 
   // mesas
-  const table1 = await prisma.table.create({
-    data: {
-      table_number: 1,
-      capacity: 4,
-      status: TableStatus.Livre,
-      unitId: storeUnit.id,
-    },
-  });
+  const tables = await Promise.all(
+    [
+      {
+        table_number: 1,
+        capacity: 4,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 2,
+        capacity: 2,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 3,
+        capacity: 6,
+        status: TableStatus.Ocupado,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 4,
+        capacity: 5,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 5,
+        capacity: 6,
+        status: TableStatus.Reservado,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 6,
+        capacity: 4,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 7,
+        capacity: 2,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 8,
+        capacity: 4,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 9,
+        capacity: 6,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id,
+      },
+      {
+        table_number: 10,
+        capacity: 8,
+        status: TableStatus.Livre,
+        unitId: storeUnit.id, 
+      }
 
-  const table2 = await prisma.table.create({
-    data: {
-      table_number: 2,
-      capacity: 2,
-      status: TableStatus.Livre,
-      unitId: storeUnit.id,
-    },
-  });
+    ].map((data) => prisma.table.create({ data })),
+  );
 
   // reservas
   await prisma.reservation.createMany({
@@ -120,27 +173,107 @@ async function main() {
         name: 'Larissa Manoela',
         phone: '11987654321',
         quantityPeople: 4,
-        startsAtDate: new Date('2026-09-10'),
+        startsAtDate: new Date('2026-11-20'),
         startsAtHours: new Date('1970-01-01T19:00:00Z'),
-        endsAtDate: new Date('2026-09-10'),
+        endsAtDate: new Date('2026-11-20'),
         endsAtHours: new Date('1970-01-01T21:00:00Z'),
         status: ReservationStatus.Pendente,
-        tableId: table1.id,
-        unitId: storeUnit.id,
       },
       {
         name: 'João Guilherme',
         phone: '21976543210',
         quantityPeople: 2,
-        startsAtDate: new Date('2026-09-10'),
+        startsAtDate: new Date('2026-11-21'),
         startsAtHours: new Date('1970-01-01T20:30:00Z'),
-        endsAtDate: new Date('2026-09-10'),
+        endsAtDate: new Date('2026-11-21'),
         endsAtHours: new Date('1970-01-01T22:30:00Z'),
         status: ReservationStatus.Confirmada,
-        tableId: table2.id,
-        unitId: storeUnit.id,
       },
-    ],
+      {
+        name: 'Mariana Costa',
+        phone: '11912345678',
+        quantityPeople: 6,
+        startsAtDate: new Date('2026-11-22'),
+        startsAtHours: new Date('1970-01-01T19:00:00Z'),
+        endsAtDate: new Date('2026-11-22'),
+        endsAtHours: new Date('1970-01-01T21:00:00Z'),
+        status: ReservationStatus.Confirmada,
+      },
+      {
+        name: 'Rafael Oliveira',
+        phone: '21912345678',
+        quantityPeople: 5,
+        startsAtDate: new Date('2026-11-23'),
+        startsAtHours: new Date('1970-01-01T19:30:00Z'),
+        endsAtDate: new Date('2026-11-23'),
+        endsAtHours: new Date('1970-01-01T21:30:00Z'),
+        status: ReservationStatus.Pendente,
+      },
+      {
+        name: 'Camila Santos',
+        phone: '11923456789',
+        quantityPeople: 6,
+        startsAtDate: new Date('2026-11-24'),
+        startsAtHours: new Date('1970-01-01T20:00:00Z'),
+        endsAtDate: new Date('2026-11-24'),
+        endsAtHours: new Date('1970-01-01T22:00:00Z'),
+        status: ReservationStatus.Confirmada,
+      },
+      {
+        name: 'Pedro Almeida',
+        phone: '31923456789',
+        quantityPeople: 4,
+        startsAtDate: new Date('2026-11-25'),
+        startsAtHours: new Date('1970-01-01T19:00:00Z'),
+        endsAtDate: new Date('2026-11-25'),
+        endsAtHours: new Date('1970-01-01T21:00:00Z'),
+        status: ReservationStatus.Pendente,
+      },
+      {
+        name: 'Beatriz Lima',
+        phone: '11934567890',
+        quantityPeople: 2,
+        startsAtDate: new Date('2026-11-26'),
+        startsAtHours: new Date('1970-01-01T20:00:00Z'),
+        endsAtDate: new Date('2026-11-26'),
+        endsAtHours: new Date('1970-01-01T22:00:00Z'),
+        status: ReservationStatus.Confirmada,
+      },
+      {
+        name: 'Lucas Ferreira',
+        phone: '21934567890',
+        quantityPeople: 4,
+        startsAtDate: new Date('2026-11-27'),
+        startsAtHours: new Date('1970-01-01T19:30:00Z'),
+        endsAtDate: new Date('2026-11-27'),
+        endsAtHours: new Date('1970-01-01T21:30:00Z'),
+        status: ReservationStatus.Cancelada,
+      },
+      {
+        name: 'Isabela Rocha',
+        phone: '11945678901',
+        quantityPeople: 6,
+        startsAtDate: new Date('2026-11-28'),
+        startsAtHours: new Date('1970-01-01T19:00:00Z'),
+        endsAtDate: new Date('2026-11-28'),
+        endsAtHours: new Date('1970-01-01T21:00:00Z'),
+        status: ReservationStatus.Concluida,
+      },
+      {
+        name: 'Gabriel Martins',
+        phone: '31945678901',
+        quantityPeople: 8,
+        startsAtDate: new Date('2026-11-29'),
+        startsAtHours: new Date('1970-01-01T20:00:00Z'),
+        endsAtDate: new Date('2026-11-29'),
+        endsAtHours: new Date('1970-01-01T22:00:00Z'),
+        status: ReservationStatus.Pendente,
+      },
+    ].map((reservation, index) => ({
+      ...reservation,
+      tableId: tables[index].id,
+        unitId: storeUnit.id,
+    })),
   });
 
   // Fornecedores
@@ -182,6 +315,35 @@ async function main() {
     ],
   });
 
+  const supplier = await prisma.supplier.findFirstOrThrow({
+    where: { company_name: 'Peixe Nobre LTDA' },
+  });
+
+  const product = await prisma.product.create({
+    data: {
+      name: 'Açúcar Refinado',
+      cost_price: 12.5,
+      category: ProductsCategory.Secos,
+      brand: 'Doce Sabor',
+      allergens: [Allergens.Soja],
+      stock_quantity: 50,
+      unit_of_product: 1,
+      measure_unit_of_product: UnitOfMeasure.kg,
+      unit_of_measure: UnitOfMeasure.kg,
+      document_url: 'https://example.com/produto-acucar.pdf',
+      min_stock: 10,
+      max_stock: 100,
+      manufacture_date: new Date('2026-01-10'),
+      expiration_date: new Date('2027-01-10'),
+      storageLocation: ProductStorageLocation.Despensa_Estoque_Seco,
+      status: ProductStatus.Ativo,
+      batch: 'BATCH-001',
+      supplierId: supplier.id,
+      unitId: storeUnit.id,
+      platePrice: 25.0,
+    },
+  });
+
   //Custos
   await prisma.cost.createMany({
     data: [
@@ -189,28 +351,29 @@ async function main() {
         costCategory: costCategory.Aluguel,
         costType: costType.Fixo,
         amount: 2000.00,
-        date: new Date("2026-11-04")
-
+        date: new Date("2026-11-04"),
+        productId: product.id,
       },
       {
         costCategory: costCategory.Taxas_Maquininhas_Cartão,
         costType: costType.Variavel,
         amount: 550.00,
-        date: new Date("2026-11-09")
-
+        date: new Date("2026-11-09"),
+        productId: product.id,
       },
       {
         costCategory: costCategory.Embalagens,
         costType: costType.Variavel,
         amount: 220.00,
-        date: new Date("2026-11-15")
+        date: new Date("2026-11-15"),
+        productId: product.id,
       },
       {
         costCategory: costCategory.Salários_Equipe,
         costType: costType.Fixo,
         amount: 7000.00,
-        date: new Date("2026-10-09")
-
+        date: new Date("2026-10-09"),
+        productId: product.id,
       },
     ],
   });

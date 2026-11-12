@@ -14,6 +14,9 @@ export class CostsService {
         costType: dto.costType,
         amount: dto.amount,
         date: dto.date,
+        product: {
+          connect: { id: dto.productId },
+        },
       }
     })
   }
@@ -35,9 +38,16 @@ export class CostsService {
   }
 
   update(id: number, updateCostDto: UpdateCostDto) {
+    const { productId, ...data } = updateCostDto;
+
     return this.prisma.cost.update({
       where: { id },
-      data: updateCostDto,
+      data: {
+        ...data,
+        ...(productId !== undefined && {
+          product: { connect: { id: productId } },
+        }),
+      },
     })
   }
 

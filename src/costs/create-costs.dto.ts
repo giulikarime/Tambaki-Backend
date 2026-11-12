@@ -18,4 +18,8 @@ export class CreateCostDto {
   @IsDateString()
   @IsNotEmpty({ message: 'A data é obrigatória' })
   date!: Date
+
+  @IsNumber()
+  @IsNotEmpty({ message: 'O produto é obrigatório' })
+  productId!: number
 }

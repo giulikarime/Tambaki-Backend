@@ -22,4 +22,9 @@ export class UpdateCostDto {
     @IsDateString()
     @IsNotEmpty({ message: 'A data não pode ser vazia' })
     date?: Date
+
+    @IsOptional()
+    @IsNumber()
+    @IsNotEmpty({ message: 'O produto não pode ser vazio' })
+    productId?: number
 }
