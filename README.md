@@ -32,7 +32,7 @@ npm run db
 Inicie a API:
 
 ```bash
-npm run start
+npm run start:dev
 ```
 
 A API fica disponível em `http://localhost:3000`.
