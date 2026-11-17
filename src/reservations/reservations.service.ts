@@ -48,7 +48,7 @@ export class ReservationsService {
     }
 
     const reservations = await this.prisma.reservation.findMany({
-      where: { tableId: dto.tableId, status: { not: 'Cancelada' } },
+      where: { tableId: dto.tableId, status: { in: ['Pendente', 'Confirmada'] } },
     });
     const overlapping = reservations.find((reservation) => {
       const reservationStartsAt = this.combineDateTime(
@@ -64,13 +64,13 @@ export class ReservationsService {
 
 
     if (overlapping) {
-      throw new BadRequestException('Essa mesa já está reservada nesse período.');
+      throw new BadRequestException('Este horário já está reservado');
     }
 
     const reservation = await this.prisma.reservation.create({
       data: {
         name: dto.name,
-        phone: dto.phone,
+        phone: dto.phone ?? '',
         quantityPeople: dto.quantityPeople,
         startsAtDate: startsAtParts.date,
         startsAtHours: startsAtParts.time,
@@ -139,7 +139,11 @@ const endsAt = (dto.endsAtDate && dto.endsAtHours)
     }
 
     const reservations = await this.prisma.reservation.findMany({
-      where: { id: { not: id }, tableId, status: { not: 'Cancelada' } },
+      where: {
+        id: { not: id },
+        tableId,
+        status: { in: ['Pendente', 'Confirmada'] },
+      },
     });
     const overlapping = reservations.find((item) => {
       const itemStartsAt = this.combineDateTime(item.startsAtDate, item.startsAtHours);
@@ -148,7 +152,7 @@ const endsAt = (dto.endsAtDate && dto.endsAtHours)
     });
 
     if (overlapping) {
-      throw new BadRequestException('Essa mesa já está reservada nesse período.');
+      throw new BadRequestException('Este horário já está reservado');
     }
 
     const updated = await this.prisma.reservation.update({
