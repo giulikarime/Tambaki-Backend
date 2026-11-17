@@ -18,8 +18,10 @@ import {
   UnitOfMeasure,
 } from '../generated/prisma/client.js';
 
+const connectionString = process.env['DATABASE_URL'] || "postgresql://neondb_owner:npg_0PEnSxZ1YrBH@ep-crimson-rice-bb5wsn2r-pooler.c-15.us-east-1.aws.neon.tech/neondb?sslmode=require";
+
 const adapter = new PrismaPg({
-  connectionString: process.env['DATABASE_URL'],
+  connectionString,
 });
 const prisma = new PrismaClient({ adapter });
 

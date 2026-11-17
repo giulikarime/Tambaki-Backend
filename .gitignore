@@ -65,3 +65,4 @@ uploads/*
 # Abre uma exceção para o arquivo .gitkeep não ser ignorado
 !uploads/.gitkeep
 
+.neon
