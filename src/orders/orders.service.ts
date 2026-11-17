@@ -21,6 +21,8 @@ export class OrdersService {
         tableId: table.id,
         unitId: table.unitId,
         service_type: dto.service_type,
+        total_value: dto.total_value ?? 0,
+        ...(dto.order_date ? { order_date: new Date(dto.order_date) } : {}),
       },
     });
 

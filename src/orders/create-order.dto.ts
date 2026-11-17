@@ -1,4 +1,12 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsNumber, IsString} from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { ServiceType, OrderStatus } from '../../generated/prisma/client';
 
 export class CreateOrderDto {
@@ -20,6 +28,10 @@ export class CreateOrderDto {
   @IsOptional()
   @IsNumber()
   total_value?: number;
+
+  @IsOptional()
+  @IsDateString()
+  order_date?: string;
 
   @IsOptional()
   @IsInt()
