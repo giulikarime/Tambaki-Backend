@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -19,7 +17,6 @@ export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateReservationDto) {
     return this.reservationsService.create(dto);
   }
@@ -48,7 +45,6 @@ export class ReservationsController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.reservationsService.delete(id);
   }

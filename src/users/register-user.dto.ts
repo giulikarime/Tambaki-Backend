@@ -72,4 +72,8 @@ export class RegisterUserDto {
 	@IsInt({ message: 'A unidade deve ser um número inteiro.' })
 	@Min(1)
 	storeUnitId!: number;
+
+	@IsString()
+	@IsNotEmpty({ message: 'O documento do funcionário é obrigatório.' })
+	employe_document!: string;
 }

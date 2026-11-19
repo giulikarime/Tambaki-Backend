@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './create-order.dto';
 import { AddOrderItemDto } from './add-order-item.dto';
@@ -9,7 +9,6 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateOrderDto) {
     return this.ordersService.create(dto);
   }
@@ -30,7 +29,6 @@ export class OrdersController {
   }
 
   @Post(':id/items')
-  @HttpCode(HttpStatus.CREATED)
   async addItem(@Param('id', ParseIntPipe) id: number, @Body() dto: AddOrderItemDto) {
     return this.ordersService.addItem(id, dto);
   }
@@ -41,7 +39,6 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.ordersService.delete(id);
   }

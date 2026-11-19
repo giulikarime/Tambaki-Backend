@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Supplier" ALTER COLUMN "cnpj" SET DATA TYPE VARCHAR(14);

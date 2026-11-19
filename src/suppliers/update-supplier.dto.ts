@@ -1,5 +1,5 @@
-import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ProductsCategory } from '../../generated/prisma/enums';
+import { IsArray, IsEmail, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { LeadTimeDays, ProductsCategory } from '../../generated/prisma/enums';
 
 export class UpdateSupplierDto {
   @IsOptional()
@@ -31,8 +31,8 @@ export class UpdateSupplierDto {
   adress?: string;
 
   @IsOptional()
-  @IsEnum(ProductsCategory, { message: 'Categoria de produto inválida.' })
-  category?: ProductsCategory;
+  @IsEnum(ProductsCategory, { each: true, message: 'Categoria de produto inválida.' })
+  category?: ProductsCategory[];
 
   @IsOptional()
   @IsString()
@@ -40,20 +40,9 @@ export class UpdateSupplierDto {
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'O horário de funcionamento não pode ser vazio.' })
-  businnes_hours?: string;
-
-  @IsOptional()
-  @IsString()
   @IsNotEmpty({ message: 'O nome do responsável não pode ser vazio.' })
   resposible_name?: string;
 
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty({ message: 'As condições de pagamento não podem ser vazias.' })
-  payment_terms?: string;
-
-  @IsOptional()
-  @IsInt()
-  lead_time_days?: number;
+  @IsEnum(LeadTimeDays)
+  lead_time_days!: LeadTimeDays;
 }

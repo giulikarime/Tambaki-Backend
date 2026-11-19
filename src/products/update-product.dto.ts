@@ -90,4 +90,9 @@ export class UpdateProductDto {
   @IsInt()
   @IsNotEmpty({ message: 'A unidade (loja) é obrigatória.' })
   unitId?: number;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'O preço de venda deve ser um número.' })
+  @Min(0, { message: 'O preço de venda não pode ser negativo.' })
+  platePrice?: number;
 }

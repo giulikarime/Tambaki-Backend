@@ -82,4 +82,8 @@ export class UpdateUserDto {
 	@IsInt({ message: 'A unidade deve ser um número inteiro.' })
 	@Min(1)
 	storeUnitId?: number;
+
+	@IsOptional()
+	@IsString({message: 'Url inválida'})
+	employe_document?: string;
 }

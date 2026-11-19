@@ -141,8 +141,13 @@ export class ProductsService {
         storageLocation: dto.storageLocation,
         status: dto.status,
         batch: dto.batch,
-        supplierId: dto.supplierId,
-        unitId: dto.unitId,
+        platePrice: dto.platePrice ?? dto.cost_price,
+        supplier: {
+          connect: { id: dto.supplierId },
+        },
+        unit: {
+          connect: { id: dto.unitId },
+        },
       },
     });
 

@@ -27,6 +27,10 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'A marca é obrigatória.' })
   brand!: string;
 
+  @IsNumber({}, { message: 'O preço de venda deve ser um número.' })
+  @Min(0, { message: 'O preço de venda não pode ser negativo.' })
+  platePrice!: number;
+
   @IsEnum(Allergens, { each: true, message: 'Alérgeno inválido.' })
   allergens!: Allergens[];
 

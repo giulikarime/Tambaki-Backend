@@ -2,6 +2,8 @@ import { Body, Controller, Get, Post, Patch, Delete, Param, ParseIntPipe } from 
 import { RegisterSupplierDto } from "./register-supplier.dto";
 import { SuppliersService } from "./suppliers.service";
 import { UpdateSupplierDto } from "./update-supplier.dto";
+import { ProductsCategory } from "../../generated/prisma/enums";
+import { LeadTimeDays } from "../../generated/prisma/enums";
 
 @Controller('suppliers')
 export class SuppliersController {
@@ -15,6 +17,14 @@ export class SuppliersController {
     @Get()
     async findAll() {
         return this.suppliersService.findAll();
+    }
+
+    @Get('enums')
+    async getEnums() {
+        return {
+            category: Object.values(ProductsCategory),
+            lead_time_days: Object.values(LeadTimeDays)
+        };
     }
 
     @Get(':id')
