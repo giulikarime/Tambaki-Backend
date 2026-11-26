@@ -76,7 +76,18 @@
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
+<<<<<<< Updated upstream
       "^.+\\.(t|j)s$": ["ts-jest", { "tsconfig": { "rootDir": "." } }]
+=======
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "rootDir": "./src"
+          }
+        }
+      ]
+>>>>>>> Stashed changes
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

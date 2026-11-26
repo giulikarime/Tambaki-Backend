@@ -15,6 +15,9 @@ import { UnitModule } from './unit/unit.module';
 import { UploadsModule } from './uploads/upload.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { CostsModule } from './costs/costs.module';
+import { AuditLogsModule } from './audit-logs/audit-logs.module';
+import { AuditLogInterceptor } from './audit-logs/audit-log.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -32,8 +35,12 @@ import { CostsModule } from './costs/costs.module';
     NotificationsModule,
     UnitModule,
     CostsModule,
+    AuditLogsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_INTERCEPTOR, useClass: AuditLogInterceptor },
+  ],
 })
 export class AppModule {}

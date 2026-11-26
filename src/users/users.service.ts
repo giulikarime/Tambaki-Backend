@@ -65,7 +65,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Usuario não encontrado.');
     }
-    return user;
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   async update(id: number, dto: UpdateUserDto) {

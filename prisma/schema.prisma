@@ -278,6 +278,26 @@ enum AccessLevel {
   Junior
 }
 
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model AuditLog {
+  id          Int         @id @default(autoincrement())
+  actorUserId Int
+  actorName   String      @db.VarChar(255)
+  action      AuditAction
+  entity      String      @db.VarChar(80)
+  entityId    String?     @db.VarChar(100)
+  description String      @db.VarChar(500)
+  createdAt   DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([actorUserId, createdAt])
+}
+
 enum ServiceType {
   Mesa
   Balcao

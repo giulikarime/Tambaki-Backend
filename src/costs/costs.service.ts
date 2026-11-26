@@ -37,6 +37,12 @@ export class CostsService {
     return this.prisma.cost.findMany({ where: { costType: 'Variavel' } })
   }
 
+  findFinancialProducts() {
+    return this.prisma.product.findMany({
+      select: { id: true, name: true, cost_price: true },
+    })
+  }
+
   update(id: number, updateCostDto: UpdateCostDto) {
     const { productId, ...data } = updateCostDto;
 
