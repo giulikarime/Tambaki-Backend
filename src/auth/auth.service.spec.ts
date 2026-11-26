@@ -70,8 +70,14 @@ describe('AuthService password reset', () => {
 
     await service.forgotPassword('user@example.com');
 
-    const [email, token] = mailService.sendPasswordResetEmail.mock.calls[0];
-    const storedHash = prisma.user.update.mock.calls[0][0].data.resetTokenHash;
+    const [email, token] = mailService.sendPasswordResetEmail.mock.calls[0] as [
+      string,
+      string,
+    ];
+    const userUpdateCall = prisma.user.update.mock.calls[0] as [
+      { data: { resetTokenHash: string } },
+    ];
+    const storedHash = userUpdateCall[0].data.resetTokenHash;
     expect(email).toBe('user@example.com');
     expect(token).toMatch(/^[a-f0-9]{64}$/);
     expect(storedHash).toBe(
@@ -91,7 +97,17 @@ describe('AuthService password reset', () => {
       },
     );
 
-    const update = prisma.client.updateMany.mock.calls[0][0];
+    const updateCall = prisma.client.updateMany.mock.calls[0] as [
+      {
+        where: { resetTokenHash: string };
+        data: {
+          password: string;
+          resetTokenHash: string | null;
+          resetTokenExpires: Date | null;
+        };
+      },
+    ];
+    const update = updateCall[0];
     expect(update.where.resetTokenHash).toBe(
       crypto.createHash('sha256').update(token).digest('hex'),
     );

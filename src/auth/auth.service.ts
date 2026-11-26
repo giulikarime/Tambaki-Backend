@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -19,11 +20,21 @@ const PASSWORD_RESET_MESSAGE =
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
+
+  private omitPassword<T extends { password: string }>(
+    record: T,
+  ): Omit<T, 'password'> {
+    const copy = { ...record } as Omit<T, 'password'> & { password?: string };
+    delete copy.password;
+    return copy;
+  }
 
   async registerClient(dto: RegisterClientDto) {
     const existing = await this.prisma.client.findFirst({
@@ -42,7 +53,7 @@ export class AuthService {
       },
     });
 
-    const { password: _, ...clientWithoutPassword } = client;
+    const clientWithoutPassword = this.omitPassword(client);
     return {
       message: 'Cliente cadastrado com sucesso!',
       client: clientWithoutPassword,
@@ -71,7 +82,7 @@ export class AuthService {
     throw new UnauthorizedException('E-mail ou senha inválidos');
   }
 
-  async logout() {
+  logout() {
     return {
       message: 'Logout realizado com sucesso!',
     };
@@ -102,7 +113,7 @@ export class AuthService {
     };
     const accessToken = await this.jwtService.signAsync(payload);
 
-    const { password: _, ...userWithoutPassword } = user;
+    const userWithoutPassword = this.omitPassword(user);
     return {
       message: 'Login realizado com sucesso!',
       accessToken,
@@ -134,7 +145,7 @@ export class AuthService {
     };
     const accessToken = await this.jwtService.signAsync(payload);
 
-    const { password: _, ...clientWithoutPassword } = client;
+    const clientWithoutPassword = this.omitPassword(client);
     return {
       message: 'Login realizado com sucesso!',
       accessToken,
@@ -142,19 +153,23 @@ export class AuthService {
     };
   }
   async forgotPassword(email: string) {
+    const normalizedEmail = email.trim();
     const user = await this.prisma.user.findFirst({
-      where: { email },
+      where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
       select: { id: true, email: true },
     });
     const client = user
       ? null
       : await this.prisma.client.findFirst({
-          where: { email },
+          where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
           select: { id: true, email: true },
         });
 
     const account = user ?? client;
     if (!account) {
+      this.logger.warn(
+        `Recuperação de senha solicitada para e-mail não encontrado no banco: ${normalizedEmail}`,
+      );
       return { message: PASSWORD_RESET_MESSAGE };
     }
 
@@ -176,6 +191,9 @@ export class AuthService {
 
     try {
       await this.mailService.sendPasswordResetEmail(account.email, token);
+      this.logger.log(
+        `E-mail de recuperação enviado via Resend para: ${account.email}`,
+      );
     } catch (error) {
       if (user) {
         await this.prisma.user.updateMany({

@@ -1,8 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
+  private readonly logger = new Logger(MailService.name);
+
   async sendPasswordResetEmail(email: string, token: string) {
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.RESEND_FROM_EMAIL;
@@ -32,7 +38,7 @@ export class MailService {
           <p>Clique no botão abaixo para cadastrar uma nova senha. <strong>O link expira em 1 hora.</strong></p>
           <div style="margin: 28px 0;">
             <a href="${resetUrl.toString()}"
-               style="background-color: #000000; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+               style="background-color: #191444; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
               Redefinir minha senha
             </a>
           </div>
@@ -42,6 +48,9 @@ export class MailService {
     });
 
     if (error) {
+      this.logger.error(
+        `Erro ao enviar e-mail de recuperação via Resend: ${JSON.stringify(error)}`,
+      );
       throw new InternalServerErrorException(
         'Falha ao enviar o e-mail de recuperação.',
       );

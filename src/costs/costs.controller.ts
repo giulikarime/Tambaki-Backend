@@ -1,55 +1,57 @@
-import { Controller, ParseIntPipe } from '@nestjs/common'
-import { CostsService } from './costs.service'
-import { Body, Delete, Get, Param, Patch, Post } from '@nestjs/common'
-import { CreateCostDto } from './create-costs.dto'
-import { UpdateCostDto } from './update-costs.dto'
-import { costCategory, costType} from '../../generated/prisma/enums'
-
+import { Controller, ParseIntPipe } from '@nestjs/common';
+import { CostsService } from './costs.service';
+import { Body, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { CreateCostDto } from './create-costs.dto';
+import { UpdateCostDto } from './update-costs.dto';
+import { costCategory, costType } from '../../generated/prisma/enums';
 
 @Controller('costs')
 export class CostsController {
-  constructor(private readonly costsService: CostsService) { }
+  constructor(private readonly costsService: CostsService) {}
 
   @Post()
   create(@Body() createCostDto: CreateCostDto) {
-    return this.costsService.create(createCostDto)
+    return this.costsService.create(createCostDto);
   }
 
   @Get()
   findAll() {
-    return this.costsService.findAll()
+    return this.costsService.findAll();
   }
 
   @Get('enums')
-    async getEnums() {
-        return {
-            costCategory: Object.values(costCategory),
-            costType: Object.values(costType)
-        };
-    }
+  getEnums() {
+    return {
+      costCategory: Object.values(costCategory),
+      costType: Object.values(costType),
+    };
+  }
 
   @Get('fixed')
   findFixedCosts() {
-    return this.costsService.findFixedCosts()
+    return this.costsService.findFixedCosts();
   }
 
   @Get('variable')
   findVariableCosts() {
-    return this.costsService.findVariableCosts()
+    return this.costsService.findVariableCosts();
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.costsService.findOne(id)
+    return this.costsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateCostDto: UpdateCostDto) {
-    return this.costsService.update(id, updateCostDto)
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCostDto: UpdateCostDto,
+  ) {
+    return this.costsService.update(id, updateCostDto);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.costsService.remove(id)
+    return this.costsService.remove(id);
   }
 }
