@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
-  
+
   const configuredOrigins = (process.env.CORS_ORIGINS ?? '')
     .split(',')
     .map((origin) => origin.trim())
@@ -28,7 +28,8 @@ async function bootstrap() {
         requestOrigin === undefined ||
         /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(requestOrigin);
       const isConfiguredOrigin =
-        requestOrigin !== undefined && allowedProductionOrigins.includes(requestOrigin);
+        requestOrigin !== undefined &&
+        allowedProductionOrigins.includes(requestOrigin);
 
       callback(null, isLocalOrigin || isConfiguredOrigin);
     },
@@ -47,4 +48,4 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }
-bootstrap();
+void bootstrap();

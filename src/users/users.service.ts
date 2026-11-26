@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterUserDto } from './register-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -8,7 +12,7 @@ const SALT_ROUNDS = 10;
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async registerUser(dto: RegisterUserDto) {
     const existing = await this.prisma.user.findFirst({
@@ -17,7 +21,9 @@ export class UsersService {
       },
     });
     if (existing) {
-      throw new ConflictException('Já existe um usuário com esse e-mail ou CPF.');
+      throw new ConflictException(
+        'Já existe um usuário com esse e-mail ou CPF.',
+      );
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
@@ -43,11 +49,19 @@ export class UsersService {
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const userWithoutPassword = this.omitPassword(user);
     return {
       message: 'Usuário cadastrado com sucesso!',
       user: userWithoutPassword,
     };
+  }
+
+  private omitPassword<T extends { password: string }>(
+    record: T,
+  ): Omit<T, 'password'> {
+    const copy = { ...record } as Omit<T, 'password'> & { password?: string };
+    delete copy.password;
+    return copy;
   }
 
   async findAll() {
@@ -55,7 +69,7 @@ export class UsersService {
       include: { storeUnit: true },
     });
 
-    return users.map(({ password: _, ...user }) => user);
+    return users.map((user) => this.omitPassword(user));
   }
 
   async findOne(id: number) {
@@ -83,7 +97,9 @@ export class UsersService {
         cpf: dto.cpf,
         email: dto.email,
         phone: dto.phone,
-        password: dto.password ? await bcrypt.hash(dto.password, SALT_ROUNDS) : undefined,
+        password: dto.password
+          ? await bcrypt.hash(dto.password, SALT_ROUNDS)
+          : undefined,
         role: dto.role,
         access_level: dto.access_level,
         employ_type: dto.employ_type,
@@ -98,7 +114,7 @@ export class UsersService {
       },
     });
 
-    const { password: _, ...userWithoutPassword } = updated;
+    const userWithoutPassword = this.omitPassword(updated);
     return {
       message: 'Usuário atualizado com sucesso!',
       user: userWithoutPassword,

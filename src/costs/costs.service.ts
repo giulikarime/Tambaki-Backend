@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma/prisma.service'
-import { CreateCostDto } from './create-costs.dto'
-import { UpdateCostDto } from './update-costs.dto'
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateCostDto } from './create-costs.dto';
+import { UpdateCostDto } from './update-costs.dto';
 
 @Injectable()
 export class CostsService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   create(dto: CreateCostDto) {
     return this.prisma.cost.create({
@@ -17,24 +17,24 @@ export class CostsService {
         product: {
           connect: { id: dto.productId },
         },
-      }
-    })
+      },
+    });
   }
 
   findAll() {
-    return this.prisma.cost.findMany()
+    return this.prisma.cost.findMany();
   }
 
   findOne(id: number) {
-    return this.prisma.cost.findUnique({ where: { id } })
+    return this.prisma.cost.findUnique({ where: { id } });
   }
 
   findFixedCosts() {
-    return this.prisma.cost.findMany({ where: { costType: 'Fixo' } })
+    return this.prisma.cost.findMany({ where: { costType: 'Fixo' } });
   }
 
   findVariableCosts() {
-    return this.prisma.cost.findMany({ where: { costType: 'Variavel' } })
+    return this.prisma.cost.findMany({ where: { costType: 'Variavel' } });
   }
 
   update(id: number, updateCostDto: UpdateCostDto) {
@@ -48,10 +48,10 @@ export class CostsService {
           product: { connect: { id: productId } },
         }),
       },
-    })
+    });
   }
 
   remove(id: number) {
-    return this.prisma.cost.delete({ where: { id } })
+    return this.prisma.cost.delete({ where: { id } });
   }
 }
