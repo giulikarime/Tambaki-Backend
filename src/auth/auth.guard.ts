@@ -37,7 +37,13 @@ export class AuthGuard implements CanActivate {
       method === 'OPTIONS' ||
       (route === 'auth' &&
         method === 'POST' &&
-        ['register', 'login', 'logout'].includes(segments[1] ?? ''))
+        [
+          'register',
+          'login',
+          'logout',
+          'forgot-password',
+          'reset-password',
+        ].includes(segments[1] ?? ''))
     ) {
       return true;
     }
