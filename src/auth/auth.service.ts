@@ -144,14 +144,15 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
+    const normalizedEmail = email.trim();
     const user = await this.prisma.user.findFirst({
-      where: { email },
+      where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
       select: { id: true, email: true },
     });
     const client = user
       ? null
       : await this.prisma.client.findFirst({
-          where: { email },
+          where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
           select: { id: true, email: true },
         });
 

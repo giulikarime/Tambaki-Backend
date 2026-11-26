@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
   Min,
 } from 'class-validator';
 import { ReservationStatus } from '../../generated/prisma/client';
@@ -18,6 +19,7 @@ export class UpdateReservationDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  @Matches(/^\d{10,11}$/)
   phone?: string;
 
   @IsOptional()
