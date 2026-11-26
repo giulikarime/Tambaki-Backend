@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -8,15 +9,21 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './login.dto';
 import { RegisterClientDto } from './register-client.dto';
+import { MailService } from '../mail/mail.service';
+import * as crypto from 'crypto';
 
 const SALT_ROUNDS = 10;
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
+const PASSWORD_RESET_MESSAGE =
+  'Se o e-mail estiver cadastrado, enviaremos um link em instantes.';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-  ) { }
+    private readonly mailService: MailService,
+  ) {}
 
   async registerClient(dto: RegisterClientDto) {
     const existing = await this.prisma.client.findFirst({
@@ -71,9 +78,7 @@ export class AuthService {
   }
 
   private async authenticateUser(
-    user: NonNullable<
-      Awaited<ReturnType<PrismaService['user']['findFirst']>>
-    >,
+    user: NonNullable<Awaited<ReturnType<PrismaService['user']['findFirst']>>>,
     password: string,
   ) {
     if (!user.active) {
@@ -135,5 +140,97 @@ export class AuthService {
       accessToken,
       account: { type: 'client' as const, ...clientWithoutPassword },
     };
+  }
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+      select: { id: true, email: true },
+    });
+    const client = user
+      ? null
+      : await this.prisma.client.findFirst({
+          where: { email },
+          select: { id: true, email: true },
+        });
+
+    const account = user ?? client;
+    if (!account) {
+      return { message: PASSWORD_RESET_MESSAGE };
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TTL_MS);
+
+    if (user) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { resetTokenHash: tokenHash, resetTokenExpires: expiresAt },
+      });
+    } else if (client) {
+      await this.prisma.client.update({
+        where: { id: client.id },
+        data: { resetTokenHash: tokenHash, resetTokenExpires: expiresAt },
+      });
+    }
+
+    try {
+      await this.mailService.sendPasswordResetEmail(account.email, token);
+    } catch (error) {
+      if (user) {
+        await this.prisma.user.updateMany({
+          where: { id: user.id, resetTokenHash: tokenHash },
+          data: { resetTokenHash: null, resetTokenExpires: null },
+        });
+      } else if (client) {
+        await this.prisma.client.updateMany({
+          where: { id: client.id, resetTokenHash: tokenHash },
+          data: { resetTokenHash: null, resetTokenExpires: null },
+        });
+      }
+      throw error;
+    }
+
+    return { message: PASSWORD_RESET_MESSAGE };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    const now = new Date();
+
+    const userUpdate = await this.prisma.user.updateMany({
+      where: {
+        resetTokenHash: tokenHash,
+        resetTokenExpires: { gt: now },
+      },
+      data: {
+        password: hashedPassword,
+        resetTokenHash: null,
+        resetTokenExpires: null,
+      },
+    });
+
+    if (userUpdate.count === 0) {
+      const clientUpdate = await this.prisma.client.updateMany({
+        where: {
+          resetTokenHash: tokenHash,
+          resetTokenExpires: { gt: now },
+        },
+        data: {
+          password: hashedPassword,
+          resetTokenHash: null,
+          resetTokenExpires: null,
+        },
+      });
+
+      if (clientUpdate.count === 0) {
+        throw new BadRequestException(
+          'Link inválido ou expirado. Solicite novamente.',
+        );
+      }
+    }
+
+    return { message: 'Senha alterada com sucesso!' };
   }
 }

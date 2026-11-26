@@ -35,6 +35,8 @@ model Client {
   phone        String   @db.VarChar(11)
   restaurant   String   @db.VarChar(150)
   password     String   @db.VarChar(60)
+  resetTokenHash String? @unique @db.VarChar(64)
+  resetTokenExpires DateTime?
   access_level String   @db.VarChar(100)
   status       Boolean
   createDate   DateTime @default(now())
@@ -47,6 +49,8 @@ model User {
   email            String      @db.VarChar(255)
   phone            String      @db.VarChar(11)
   password         String      @db.VarChar(60)
+  resetTokenHash   String?     @unique @db.VarChar(64)
+  resetTokenExpires DateTime?
   role             String      @db.VarChar(150)
   access_level     AccessLevel
   employ_type      EmployType
