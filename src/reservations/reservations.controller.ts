@@ -26,6 +26,11 @@ export class ReservationsController {
     return this.reservationsService.findAll();
   }
 
+  @Get('open/list')
+  async findOpen() {
+    return this.reservationsService.findOpen();
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.reservationsService.findOne(id);

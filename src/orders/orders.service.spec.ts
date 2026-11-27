@@ -6,6 +6,29 @@ jest.mock('../prisma/prisma.service', () => ({
   PrismaService: class PrismaService {},
 }));
 
+describe('OrdersService open orders', () => {
+  it('returns only the summary fields needed by the open tickets screen', async () => {
+    const orders = [
+      { id: 20, nameClient: 'Cliente', tableId: 5, status: 'Aberta' },
+    ];
+    const findMany = jest.fn().mockResolvedValue(orders);
+    const service = new OrdersService({
+      order: { findMany },
+    } as unknown as PrismaService);
+
+    await expect(service.findOpen()).resolves.toEqual(orders);
+    expect(findMany).toHaveBeenCalledWith({
+      where: { status: 'Aberta' },
+      select: {
+        id: true,
+        nameClient: true,
+        tableId: true,
+        status: true,
+      },
+    });
+  });
+});
+
 describe('OrdersService reservation check-in', () => {
   let transaction: {
     table: { findUnique: jest.Mock; update: jest.Mock };

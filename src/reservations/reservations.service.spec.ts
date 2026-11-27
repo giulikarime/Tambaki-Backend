@@ -43,6 +43,15 @@ describe('ReservationsService overdue reservations', () => {
 
     await service.findAll();
 
+    expect(prisma.reservation.findMany).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        where: {
+          status: 'Pendente',
+          startsAtDate: { lte: expect.any(Date) },
+        },
+      }),
+    );
     expect(prisma.reservation.updateMany).toHaveBeenCalledWith({
       where: { id: { in: [12] }, status: 'Pendente' },
       data: { status: 'Cancelada' },
@@ -68,5 +77,39 @@ describe('ReservationsService overdue reservations', () => {
     await service.findAll();
 
     expect(prisma.reservation.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('returns only active reservations with the fields used by the open tickets screen', async () => {
+    const activeReservations = [
+      {
+        id: 12,
+        name: 'Cliente',
+        status: 'Pendente',
+        tableId: 5,
+        startsAtDate: new Date(),
+        startsAtHours: new Date(),
+        endsAtDate: new Date(),
+        endsAtHours: new Date(),
+      },
+    ];
+    prisma.reservation.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(activeReservations);
+
+    await expect(service.findOpen()).resolves.toEqual(activeReservations);
+    expect(prisma.reservation.findMany).toHaveBeenNthCalledWith(2, {
+      where: { status: { in: ['Pendente', 'Confirmada'] } },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        tableId: true,
+        startsAtDate: true,
+        startsAtHours: true,
+        endsAtDate: true,
+        endsAtHours: true,
+      },
+      orderBy: [{ startsAtDate: 'asc' }, { startsAtHours: 'asc' }],
+    });
   });
 });

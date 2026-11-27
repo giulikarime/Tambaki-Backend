@@ -101,6 +101,18 @@ export class OrdersService {
     });
   }
 
+  async findOpen() {
+    return this.prisma.order.findMany({
+      where: { status: 'Aberta' },
+      select: {
+        id: true,
+        nameClient: true,
+        tableId: true,
+        status: true,
+      },
+    });
+  }
+
   async findOne(id: number) {
     const order = await this.prisma.order.findUnique({
       where: { id },

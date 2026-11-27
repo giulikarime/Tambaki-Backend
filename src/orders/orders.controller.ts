@@ -19,6 +19,11 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
+  @Get('open/list')
+  async findOpen() {
+    return this.ordersService.findOpen();
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.ordersService.findOne(id);

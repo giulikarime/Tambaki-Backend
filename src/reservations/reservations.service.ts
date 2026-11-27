@@ -36,8 +36,14 @@ export class ReservationsService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async cancelOverduePendingReservations() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const pendingReservations = await this.prisma.reservation.findMany({
-      where: { status: 'Pendente' },
+      where: {
+        status: 'Pendente',
+        startsAtDate: { lte: today },
+      },
       select: { id: true, startsAtDate: true, startsAtHours: true },
     });
     const now = Date.now();
@@ -140,6 +146,24 @@ export class ReservationsService implements OnModuleInit, OnModuleDestroy {
     await this.cancelOverduePendingReservations();
     return this.prisma.reservation.findMany({
       include: { table: true },
+      orderBy: [{ startsAtDate: 'asc' }, { startsAtHours: 'asc' }],
+    });
+  }
+
+  async findOpen() {
+    await this.cancelOverduePendingReservations();
+    return this.prisma.reservation.findMany({
+      where: { status: { in: ['Pendente', 'Confirmada'] } },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        tableId: true,
+        startsAtDate: true,
+        startsAtHours: true,
+        endsAtDate: true,
+        endsAtHours: true,
+      },
       orderBy: [{ startsAtDate: 'asc' }, { startsAtHours: 'asc' }],
     });
   }
