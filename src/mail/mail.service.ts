@@ -21,7 +21,7 @@ export class MailService {
     }
 
     const resetUrl = new URL(
-      '/nova-senha',
+      '/new-password',
       `${frontendUrl.replace(/\/+$/, '')}/`,
     );
     resetUrl.searchParams.set('token', token);
