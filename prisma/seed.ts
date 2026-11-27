@@ -284,7 +284,7 @@ async function main() {
       {
         company_name: 'Peixe Nobre LTDA',
         trade_name: 'Peixe Nobre',
-        cnpj: '12345678900',
+        cnpj: '12345678000100',
         phone: '11988887777',
         email: 'contato@peixenobre.com',
         adress: 'Av. Amazonas, 500',
