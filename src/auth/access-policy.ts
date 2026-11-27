@@ -14,6 +14,8 @@ export function canAccessRoute(
       return level === 'Senior';
     case 'costs':
       return level === 'Senior' && readOnly;
+    case 'cmv-planning':
+      return level === 'Senior' && readOnly;
     case 'products':
       if (
         level === 'Junior' &&

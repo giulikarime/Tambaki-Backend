@@ -10,6 +10,10 @@ export class CreateOrderDto {
   @IsNotEmpty()
   tableId!: number;
 
+  @IsOptional()
+  @IsInt()
+  reservationId?: number;
+
   @IsEnum(ServiceType)
   service_type!: ServiceType;
 

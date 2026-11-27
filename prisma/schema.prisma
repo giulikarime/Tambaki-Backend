@@ -23,6 +23,7 @@ model StoreUnit {
   product      Product[]
   reservations Reservation[]
   tables       Table[]
+  cmvPlannings CmvPlanning[]
   user         User[]
 
   @@unique([company_name, cnpj])
@@ -231,6 +232,20 @@ model Cost {
   costMovement Movement[]
   createAt     DateTime     @default(now())
   updateAt     DateTime     @updatedAt
+}
+
+model CmvPlanning {
+  id            Int       @id @default(autoincrement())
+  year          Int
+  month         Int
+  plannedAmount Float
+  unitId        Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  unit          StoreUnit @relation(fields: [unitId], references: [id])
+
+  @@unique([unitId, year, month])
+  @@index([unitId, year])
 }
 
 model Movement {

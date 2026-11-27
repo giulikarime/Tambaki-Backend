@@ -18,6 +18,7 @@ import { CostsModule } from './costs/costs.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { AuditLogInterceptor } from './audit-logs/audit-log.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CmvPlanningModule } from './cmv-planning/cmv-planning.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     UnitModule,
     CostsModule,
     AuditLogsModule,
+    CmvPlanningModule,
   ],
   controllers: [AppController],
   providers: [

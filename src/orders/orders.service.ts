@@ -4,34 +4,95 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './create-order.dto';
 import { AddOrderItemDto } from './add-order-item.dto';
 import { UpdateOrderDto } from './update-order.dto';
+import { UpdateOrderItemDto } from './update-order-item.dto';
+import {
+  combineReservationDateTime,
+  RESERVATION_LATE_GRACE_PERIOD_MS,
+} from '../reservations/reservation-time';
 
 @Injectable()
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateOrderDto) {
-    const table = await this.prisma.table.findUnique({ where: { id: dto.tableId } });
-    if (!table) {
-      throw new NotFoundException('Mesa não encontrada.');
-    }
+    const result = await this.prisma.$transaction(
+      async (transaction: Prisma.TransactionClient) => {
+        const table = await transaction.table.findUnique({
+          where: { id: dto.tableId },
+        });
+        if (!table) {
+          throw new NotFoundException('Mesa não encontrada.');
+        }
 
-    const order = await this.prisma.order.create({
-      data: {
-        nameClient: dto.nameClient,
-        tableId: table.id,
-        unitId: table.unitId,
-        service_type: dto.service_type,
+        if (dto.reservationId !== undefined) {
+          const reservation = await transaction.reservation.findUnique({
+            where: { id: dto.reservationId },
+          });
+          if (!reservation || reservation.tableId !== table.id) {
+            throw new NotFoundException('Reserva não encontrada para esta mesa.');
+          }
+          if (reservation.status !== 'Pendente') {
+            throw new BadRequestException('Esta reserva não está pendente.');
+          }
+
+          const startsAt = combineReservationDateTime(
+            reservation.startsAtDate,
+            reservation.startsAtHours,
+          );
+          if (
+            Date.now() >=
+            startsAt.getTime() + RESERVATION_LATE_GRACE_PERIOD_MS
+          ) {
+            const cancelled = await transaction.reservation.updateMany({
+              where: { id: reservation.id, status: 'Pendente' },
+              data: { status: 'Cancelada' },
+            });
+            if (cancelled.count === 1) {
+              return { kind: 'expired' as const };
+            }
+            throw new BadRequestException('Esta reserva não está mais pendente.');
+          }
+
+          const confirmed = await transaction.reservation.updateMany({
+            where: {
+              id: reservation.id,
+              tableId: table.id,
+              status: 'Pendente',
+            },
+            data: { status: 'Confirmada' },
+          });
+          if (confirmed.count !== 1) {
+            throw new BadRequestException('Esta reserva não está mais pendente.');
+          }
+        }
+
+        const order = await transaction.order.create({
+          data: {
+            nameClient: dto.nameClient,
+            tableId: table.id,
+            unitId: table.unitId,
+            service_type: dto.service_type,
+          },
+        });
+
+        if (table.status !== 'Ocupado') {
+          await transaction.table.update({
+            where: { id: table.id },
+            data: { status: 'Ocupado' },
+          });
+        }
+
+        return { kind: 'created' as const, order };
       },
-    });
+    );
 
-    if (table.status === 'Livre') {
-      await this.prisma.table.update({
-        where: { id: table.id },
-        data: { status: 'Ocupado' },
-      });
+    if (result.kind === 'expired') {
+      throw new BadRequestException(
+        'A reserva foi cancelada porque o limite de 30 minutos de atraso foi excedido.',
+      );
     }
 
-    return { message: 'Comanda aberta com sucesso!', order };
+    return { message: 'Comanda aberta com sucesso!', order: result.order };
   }
 
   async findAll() {
@@ -135,6 +196,49 @@ export class OrdersService {
     });
 
     return { message: 'Item adicionado com sucesso!', item, order: updatedOrder };
+  }
+
+  async updateItem(orderId: number, itemId: number, dto: UpdateOrderItemDto) {
+    return this.prisma.$transaction(async (transaction: Prisma.TransactionClient) => {
+      const order = await transaction.order.findUnique({ where: { id: orderId } });
+      if (!order) {
+        throw new NotFoundException('Comanda não encontrada.');
+      }
+      if (order.status !== 'Aberta') {
+        throw new BadRequestException(
+          'Só é possível editar itens em comandas abertas.',
+        );
+      }
+
+      const item = await transaction.orderItem.findFirst({
+        where: { id: itemId, orderId },
+      });
+      if (!item) {
+        throw new NotFoundException('Item não encontrado nesta comanda.');
+      }
+
+      const quantityDifference = dto.quantity - item.quantity;
+      if (dto.quantity === 0) {
+        await transaction.orderItem.delete({ where: { id: itemId } });
+      } else {
+        await transaction.orderItem.update({
+          where: { id: itemId },
+          data: { quantity: dto.quantity },
+        });
+      }
+
+      const updatedOrder = await transaction.order.update({
+        where: { id: orderId },
+        data: {
+          total_value: {
+            increment: item.unit_price * quantityDifference,
+          },
+        },
+        include: { items: { include: { menu: true } }, table: true },
+      });
+
+      return { message: 'Item atualizado com sucesso!', order: updatedOrder };
+    });
   }
 
   async close(orderId: number) {

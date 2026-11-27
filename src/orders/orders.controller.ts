@@ -3,6 +3,7 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './create-order.dto';
 import { AddOrderItemDto } from './add-order-item.dto';
 import { UpdateOrderDto } from './update-order.dto';
+import { UpdateOrderItemDto } from './update-order-item.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -31,6 +32,15 @@ export class OrdersController {
   @Post(':id/items')
   async addItem(@Param('id', ParseIntPipe) id: number, @Body() dto: AddOrderItemDto) {
     return this.ordersService.addItem(id, dto);
+  }
+
+  @Patch(':id/items/:itemId')
+  async updateItem(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('itemId', ParseIntPipe) itemId: number,
+    @Body() dto: UpdateOrderItemDto,
+  ) {
+    return this.ordersService.updateItem(id, itemId, dto);
   }
 
   @Patch(':id/close')
